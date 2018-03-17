@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FirebaseAuth.getInstance().signOut();
-        fun("sihadmin@gmail.com","sih2018");
+        fun("district@gmail.com","sejal@123");
 
         Button button = findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,AdminsRegistrationActivity.class));
             }
         });
+        Button button1 = findViewById(R.id.button3);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,RegisterAuthorityActivity.class));
+            }
+        });
+
     }
 
     void fun(String email,String password){

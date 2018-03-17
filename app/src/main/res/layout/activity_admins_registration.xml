@@ -95,7 +95,7 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:hint=" Password"
                     android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@android:color/background_light" />
@@ -186,6 +186,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/state_layout_admin_reg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -239,7 +240,39 @@
                     android:layout_height="wrap_content"
 
                     android:hint="  District"
-                    android:inputType="numberSigned"
+                    android:inputType="text|numberSigned"
+                    android:lines="1"
+                    android:textColor="@android:color/background_light" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/authority_layout_admin_reg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginTop="25dp"
+                android:src="@drawable/ic_state" />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/authority__txt_admin_reg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/mythem">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="  Authority"
+                    android:inputType="text"
                     android:lines="1"
                     android:textColor="@android:color/background_light" />
 

@@ -29,9 +29,9 @@ import java.util.HashMap;
 public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
-    private TextInputLayout Name,Email,Password,MobileNo,State,District;
+    private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority;
     private RadioGroup Gender;
-    private LinearLayout DistrictLayout;
+    private LinearLayout DistrictLayout,AuthorityLayout,StateLayout;
     private Button button;
     private String Gender_s="Male",Type;
     private String id;
@@ -85,6 +85,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
 
         //Registration of State or district admin
+        mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(Email.getEditText().getText().toString(),Password.getEditText().getText().toString())
                 .addOnCompleteListener(AdminsRegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -103,6 +104,9 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                 userInfo.put("type","state_admin");
                             else if(Type.equals("state_admin"))
                                 userInfo.put("type","district_admin");
+                            else if(Type.equals("district_admin")){
+                                userInfo.put("type","authority_admin");
+                            }
 
 
                             myRef.setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -117,6 +121,10 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                         myRef = database.getReference().child("state_admin").child(user.getUid());                                    }
                                     else if(Type.equals("state_admin"))
                                         myRef = database.getReference().child("district_admin").child(user.getUid());
+                                    else if(Type.equals("district_admin")){
+                                        myRef = database.getReference().child("authority_admin").child(user.getUid());
+
+                                    }
 
 
                                     HashMap<String,String> userInfo1 = new HashMap<String, String>();
@@ -124,11 +132,19 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     userInfo1.put("password",Password.getEditText().getText().toString());
                                     userInfo1.put("email",Email.getEditText().getText().toString());
                                     userInfo1.put("gender",Gender_s);
-                                    userInfo1.put("state",State.getEditText().getText().toString());
                                     userInfo1.put("mobileno",MobileNo.getEditText().getText().toString());
 
-                                    if(Type.equals("state_admin")) {
+                                    if(Type.equals("admin")){
+                                        userInfo1.put("state",State.getEditText().getText().toString());
+                                    }
+                                    else if(Type.equals("state_admin")) {
+                                        userInfo1.put("state","ghgj");
                                         userInfo1.put("district",District.getEditText().getText().toString());
+                                    }
+                                    else if(Type.equals("district_admin")){
+                                        userInfo1.put("state","ghgj");
+                                        userInfo1.put("district","dbhbdsh");
+                                        userInfo1.put("authority",Authority.getEditText().getText().toString());
                                     }
 
                                     myRef.setValue(userInfo1).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -143,7 +159,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     FirebaseAuth.getInstance().signOut();
 
                                     //Sign in curent user
-                                    fun("state@gmail.com","sejal@123");
+                                    fun("district@gmail.com","sejal@123");
 
                                 }
                             });
@@ -176,11 +192,27 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                 Type = dataSnapshot.child("type").getValue().toString();
                 Toast.makeText(AdminsRegistrationActivity.this, Type,
                         Toast.LENGTH_SHORT).show();
-                if(Type.equals("admin"))
+                if(Type.equals("admin")){
                     DistrictLayout.setVisibility(View.GONE);
+                    AuthorityLayout.setVisibility(View.GONE);
+                    StateLayout.setVisibility(View.VISIBLE);
+                }
 
-                else if(Type.equals("state_admin"))
+
+                else if(Type.equals("state_admin")){
                     DistrictLayout.setVisibility(View.VISIBLE);
+                    StateLayout.setVisibility(View.GONE);
+                    AuthorityLayout.setVisibility(View.GONE);
+                }
+
+
+                else if(Type.equals("district_admin")){//district_admin
+                    DistrictLayout.setVisibility(View.GONE);
+                    StateLayout.setVisibility(View.GONE);
+                    AuthorityLayout.setVisibility(View.VISIBLE);
+                }
+
+
             }
 
             @Override
@@ -201,7 +233,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         Gender = findViewById(R.id.gender_txt_admin_reg);
         State = findViewById(R.id.state__txt_admin_reg);
         District = findViewById(R.id.district__txt_admin_reg);
+        Authority = findViewById(R.id.authority__txt_admin_reg);
         DistrictLayout = findViewById(R.id.district_layout_admin_reg);
+        AuthorityLayout = findViewById(R.id.authority_layout_admin_reg);
+        StateLayout = findViewById(R.id.state_layout_admin_reg);
+
     }
 
     private void fun(String email,String password){
