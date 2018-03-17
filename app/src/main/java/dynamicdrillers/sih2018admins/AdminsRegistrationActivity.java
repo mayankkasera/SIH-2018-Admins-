@@ -1,5 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -38,6 +39,8 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private ProgressDialog progressBar;
+
 
 
 
@@ -46,6 +49,12 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admins_registration);
+
+        progressBar = new ProgressDialog(this);
+        progressBar.setMessage("Initializing ...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.show();
+
 
         //Initialization of variables
         init();
@@ -60,6 +69,10 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressBar = new ProgressDialog(view.getContext());
+                progressBar.setMessage("Registering...");
+                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressBar.show();
 
                 registerAdmins();
 
@@ -152,6 +165,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Toast.makeText(AdminsRegistrationActivity.this, "register....info ...state",
                                                     Toast.LENGTH_SHORT).show();
+                                            progressBar.dismiss();
                                         }
                                     });
 
@@ -168,6 +182,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
                         } else {
+                            progressBar.dismiss();
                             // If sign in fails, display a message to the user.
                             Toast.makeText(AdminsRegistrationActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -196,6 +211,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.VISIBLE);
+                    progressBar.dismiss();
                 }
 
 
@@ -203,6 +219,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.VISIBLE);
                     StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
+                    progressBar.dismiss();
                 }
 
 
@@ -210,6 +227,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.VISIBLE);
+                    progressBar.dismiss();
                 }
 
 

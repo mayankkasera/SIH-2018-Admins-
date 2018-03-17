@@ -1,5 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private ProgressDialog progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +35,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,AdminsRegistrationActivity.class));
             }
         });
-        Button button1 = findViewById(R.id.button3);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,RegisterAuthorityActivity.class));
-            }
-        });
+
 
     }
 
     void fun(String email,String password){
+
+        progressBar = new ProgressDialog(this);
+        progressBar.setMessage("sign ining ...");
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.show();
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email,password )
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
                             Toast.makeText(MainActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
-
+                            progressBar.dismiss();
 
 
                         } else {
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
                             Toast.makeText(MainActivity.this, "failed.",
                                     Toast.LENGTH_SHORT).show();
-
+                            progressBar.dismiss();
                         }
 
                         // ...
