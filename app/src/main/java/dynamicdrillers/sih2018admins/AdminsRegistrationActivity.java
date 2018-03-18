@@ -1,6 +1,7 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
+import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,8 +14,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -42,6 +48,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     private DatabaseReference myRef;
     private ProgressDialog progressBar;
     public static final String SharedprefenceName = "USER_DATA";
+    LinearLayout choose_location;
+    TextView choose_location_textview;
+    String User_Type = SharedpreferenceHelper.getInstance(this).getType();
+    int PLACE_PICKER_REQUEST = 1;
+    Double Lat,Long;
 
 
 
@@ -64,6 +75,28 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
         //setting Visiblity of District Layout
         setDistrictVisiblity();
+
+        if(User_Type.equals("district_admin"))
+        {
+            choose_location.setVisibility(View.VISIBLE);
+        }
+
+        choose_location_textview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+                try {
+                    startActivityForResult(builder.build(AdminsRegistrationActivity.this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
 
 
 
@@ -115,7 +148,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                             myRef= database.getReference().child("Management_Users").child(user.getUid());
 
 
-                            HashMap<String,String> userInfo = new HashMap<String, String>();
+                            final HashMap<String,String> userInfo = new HashMap<String, String>();
                             if(Type.equals("admin"))
                                 userInfo.put("type","state_admin");
                             else if(Type.equals("state_admin"))
@@ -138,7 +171,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     else if(Type.equals("state_admin"))
                                         myRef = database.getReference().child("district_admin").child(user.getUid());
                                     else if(Type.equals("district_admin")){
-                                        myRef = database.getReference().child("authority_admin").child(user.getUid());
+                                        myRef = database.getReference().child("subregionadmin").child(user.getUid());
 
                                     }
 
@@ -160,6 +193,9 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     else if(Type.equals("district_admin")){
                                         userInfo1.put("state","ghgj");
                                         userInfo1.put("district","dbhbdsh");
+                                        userInfo1.put("lat",Lat.toString());
+                                        userInfo1.put("long",Long.toString());
+
                                         userInfo1.put("authority",Authority.getEditText().getText().toString());
                                     }
 
@@ -263,6 +299,8 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         DistrictLayout = findViewById(R.id.district_layout_admin_reg);
         AuthorityLayout = findViewById(R.id.authority_layout_admin_reg);
         StateLayout = findViewById(R.id.state_layout_admin_reg);
+        choose_location = findViewById(R.id.choose_location_layout);
+        choose_location_textview = findViewById(R.id.choose_location_textview);
 
     }
 
@@ -293,6 +331,21 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(data, this);
+
+                Lat = place.getLatLng().latitude;
+                Long= place.getLatLng().longitude;
+
+
+                choose_location_textview.setText(place.getAddress());
+            }
+        }
     }
 
 

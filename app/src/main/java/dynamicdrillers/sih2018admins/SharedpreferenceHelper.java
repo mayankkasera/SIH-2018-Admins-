@@ -142,4 +142,11 @@ public class SharedpreferenceHelper {
 
     }
 
+    public String getType()
+    {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        return    sharedPreferences.getString("type",null);
+
+    }
+
 }
