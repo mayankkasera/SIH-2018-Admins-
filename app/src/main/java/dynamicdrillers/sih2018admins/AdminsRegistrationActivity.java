@@ -1,12 +1,13 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -40,6 +41,8 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private ProgressDialog progressBar;
+    public static final String SharedprefenceName = "USER_DATA";
+
 
 
 
@@ -51,7 +54,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admins_registration);
 
         progressBar = new ProgressDialog(this);
-        progressBar.setMessage("Initializing ...");
+        progressBar.setMessage("INITIALIZING ...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.show();
 
@@ -173,7 +176,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     FirebaseAuth.getInstance().signOut();
 
                                     //Sign in curent user
-                                    fun("district@gmail.com","sejal@123");
+
+                                    SharedPreferences sharedPreferences = getSharedPreferences(SharedprefenceName, Context.MODE_PRIVATE);
+                                    Toast.makeText(AdminsRegistrationActivity.this,sharedPreferences.getString("email",null)+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
+                                    fun(sharedPreferences.getString("email",null),sharedPreferences.getString("password",null));
+
 
                                 }
                             });
@@ -198,6 +205,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
+
         DatabaseReference refType = database.getReference().child("Management_Users").child(user.getUid());
 
 
@@ -273,9 +281,9 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                             Toast.makeText(AdminsRegistrationActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
 
 
-
                         } else {
                             // If sign in fails, display a message to the user.
+                            startActivity(new Intent(getBaseContext(),MainActivity.class));
 
                             Toast.makeText(AdminsRegistrationActivity.this, "failed.",
                                     Toast.LENGTH_SHORT).show();

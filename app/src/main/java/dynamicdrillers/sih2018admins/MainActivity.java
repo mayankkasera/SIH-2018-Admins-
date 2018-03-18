@@ -2,23 +2,19 @@ package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.app.ProgressDialog;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebaseAuth.getInstance().signOut();
-        fun("district@gmail.com","sejal@123");
+        // FirebaseAuth.getInstance().signOut();
+        // fun("district@gmail.com","sejal@123");
 
         //Checking User Is Logged In or Not
         Button button = findViewById(R.id.button2);
@@ -59,13 +55,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        Button button = findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,AdminsRegistrationActivity.class));
-            }
-        });
+
 
 
     }
