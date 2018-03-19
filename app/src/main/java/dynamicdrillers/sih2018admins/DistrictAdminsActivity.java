@@ -29,6 +29,7 @@ public class DistrictAdminsActivity extends AppCompatActivity {
         int numberOfColumns = 3;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
+
     }
 
     public void onStart() {
@@ -36,7 +37,7 @@ public class DistrictAdminsActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("district_admin");
+                .child("district_admin").orderByChild("state").equalTo(getIntent().getStringExtra("state"));
 
 
         FirebaseRecyclerOptions<DistrictModal> options =
@@ -104,4 +105,6 @@ public class DistrictAdminsActivity extends AppCompatActivity {
         }
 
     }
+
+
 }

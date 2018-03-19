@@ -1,5 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +52,7 @@ public class AdminsListActivity extends AppCompatActivity {
                 = new FirebaseRecyclerAdapter<AdminsModal,AdminsViewHolder>(options) {
 
             @Override
-            protected void onBindViewHolder(@NonNull AdminsViewHolder holder, int position, @NonNull AdminsModal user) {
+            protected void onBindViewHolder(@NonNull AdminsViewHolder holder, int position, @NonNull final AdminsModal user) {
                 final int pos = position;
                 holder.setImage(user.getImage());
                 holder.settitle(user.getState());
@@ -59,6 +60,9 @@ public class AdminsListActivity extends AppCompatActivity {
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Intent intent = new Intent(AdminsListActivity.this,DistrictAdminsActivity.class);
+                        intent.putExtra("state",user.getState());
+                        startActivity(intent);
 
                     }
                 });
