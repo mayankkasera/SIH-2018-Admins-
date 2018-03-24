@@ -51,6 +51,7 @@ public class AdminsListActivity extends AppCompatActivity {
         FirebaseRecyclerAdapter<AdminsModal,AdminsViewHolder> adapter
                 = new FirebaseRecyclerAdapter<AdminsModal,AdminsViewHolder>(options) {
 
+
             @Override
             protected void onBindViewHolder(@NonNull AdminsViewHolder holder, int position, @NonNull final AdminsModal user) {
                 final int pos = position;

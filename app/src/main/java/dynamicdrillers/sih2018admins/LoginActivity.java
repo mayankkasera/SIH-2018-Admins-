@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                             String UserType = dataSnapshot.child("type").getValue().toString();
 
                             //getting User Details By Its Type
+                            Toast.makeText(LoginActivity.this, UserType, Toast.LENGTH_SHORT).show();
                             setUserDetails(UserType);
                             Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
                             startActivity(i);
@@ -158,6 +159,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         else if(userType.equals("district_admin"))
         {
+
+
             //getting user details and setting to sharedPrefences
             mDataRoot.child("district_admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
                 @Override
