@@ -35,7 +35,7 @@ public class DashboardActivity extends AppCompatActivity {
         CardAdmin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this,AdminsListActivity.class));
+                startActivity(new Intent(DashboardActivity.this,AdminsRegistrationActivity.class));
             }
         });
 

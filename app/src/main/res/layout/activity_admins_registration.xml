@@ -243,7 +243,7 @@
                     android:layout_height="wrap_content"
 
                     android:hint="  District"
-                    android:inputType="text|numberSigned"
+                    android:inputType="text"
                     android:lines="1"
                     android:textColor="@android:color/background_light" />
 

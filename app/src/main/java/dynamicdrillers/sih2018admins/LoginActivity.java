@@ -190,10 +190,10 @@ public class LoginActivity extends AppCompatActivity {
             });
 
         }
-        else  if(userType.equals("subregion_admin"))
+        else  if(userType.equals("region_admin"))
         {
             //getting user details and setting to sharedPrefences
-            mDataRoot.child("subregion_admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
+            mDataRoot.child("region_admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -203,13 +203,13 @@ public class LoginActivity extends AppCompatActivity {
                     String subRegionAdminImage = dataSnapshot.child("image").getValue().toString();
                     String subRegionAdminStateName = dataSnapshot.child("state_name").getValue().toString();
                     String subRegionAdminDistrictName = dataSnapshot.child("district_name").getValue().toString();
-                    String subRegionAdminRegionName  = dataSnapshot.child("subregion_name").getValue().toString();
+                    String subRegionAdminRegionName  = dataSnapshot.child("region_name").getValue().toString();
                     String subRegionAdminPassword = dataSnapshot.child("password").getValue().toString();
                     String subRegionAdminEmail = mAuth.getCurrentUser().getEmail().toString();
 
 
                     SharedpreferenceHelper.getInstance(LoginActivity.this).setSubRegionAdminData(subRegionAdminName,subRegionAdminImage,subRegionAdminMobileno
-                            ,subRegionAdminGender,"subregion_admin"
+                            ,subRegionAdminGender,"region_admin"
                             ,subRegionAdminStateName,subRegionAdminDistrictName,subRegionAdminRegionName,subRegionAdminPassword,subRegionAdminEmail);
 
 

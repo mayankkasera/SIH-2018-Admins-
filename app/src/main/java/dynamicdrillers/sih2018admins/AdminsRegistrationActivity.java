@@ -17,6 +17,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -53,6 +55,10 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     String User_Type = SharedpreferenceHelper.getInstance(this).getType();
     int PLACE_PICKER_REQUEST = 1;
     Double Lat,Long;
+    String RegionState=" ";
+    String RegionDistrict = " ";
+    Place Myplace;
+
 
 
 
@@ -102,6 +108,8 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
         //Registration
         button = findViewById(R.id.register_btn_admin_reg);
+        button.setEnabled(false);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,6 +119,8 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                 progressBar.show();
 
                 registerAdmins();
+
+
 
             }
         });
@@ -154,7 +164,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                             else if(Type.equals("state_admin"))
                                 userInfo.put("type","district_admin");
                             else if(Type.equals("district_admin")){
-                                userInfo.put("type","authority_admin");
+                                userInfo.put("type","region_admin");
                             }
 
 
@@ -165,13 +175,13 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
 
                                     //setting person detail
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    final FirebaseUser user = mAuth.getCurrentUser();
                                     if(Type.equals("admin")) {
                                         myRef = database.getReference().child("state_admin").child(user.getUid());                                    }
                                     else if(Type.equals("state_admin"))
                                         myRef = database.getReference().child("district_admin").child(user.getUid());
                                     else if(Type.equals("district_admin")){
-                                        myRef = database.getReference().child("subregionadmin").child(user.getUid());
+                                        myRef = database.getReference().child("region_admin").child(user.getUid());
 
                                     }
 
@@ -188,11 +198,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     }
                                     else if(Type.equals("state_admin")) {
                                         userInfo1.put("state","ghgj");
-                                        userInfo1.put("district",District.getEditText().getText().toString());
+                                        userInfo1.put("district",District.getEditText().getText().toString().toLowerCase());
                                     }
                                     else if(Type.equals("district_admin")){
-                                        userInfo1.put("state","ghgj");
-                                        userInfo1.put("district","dbhbdsh");
+                                        userInfo1.put("state",RegionState.toLowerCase());
+                                        userInfo1.put("district",RegionDistrict.toLowerCase());
                                         userInfo1.put("lat",Lat.toString());
                                         userInfo1.put("long",Long.toString());
 
@@ -204,6 +214,20 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Toast.makeText(AdminsRegistrationActivity.this, "register....info ...state",
                                                     Toast.LENGTH_SHORT).show();
+
+                                            if(Type.equals("district_admin"))
+                                            {
+                                                Toast.makeText(AdminsRegistrationActivity.this, RegionDistrict+""+RegionState, Toast.LENGTH_SHORT).show();
+
+                                                DatabaseReference myRef1 = database.getReference().child("region_places").child(RegionState.toLowerCase()).child(RegionDistrict.toLowerCase());
+                                                GeoFire geoFire = new GeoFire(myRef1);
+                                                geoFire.setLocation(user.getUid(),new GeoLocation(Lat,Long));
+
+
+                                                RegionState = " ";
+                                                RegionDistrict = " ";
+                                            }
+
                                             progressBar.dismiss();
                                         }
                                     });
@@ -255,6 +279,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.VISIBLE);
+                    button.setEnabled(true);
                     progressBar.dismiss();
                 }
 
@@ -263,6 +288,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.VISIBLE);
                     StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
+                    button.setEnabled(true);
                     progressBar.dismiss();
                 }
 
@@ -337,19 +363,54 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
+                Myplace = PlacePicker.getPlace(data, this);
 
-                Lat = place.getLatLng().latitude;
-                Long= place.getLatLng().longitude;
+                Lat = Myplace.getLatLng().latitude;
+                Long = Myplace.getLatLng().longitude;
+
+                if (Myplace.getAddress() != null) {
+                    String address[] = Myplace.getAddress().toString().split(",");
 
 
-                choose_location_textview.setText(place.getAddress());
+                    if (address.length <= 3) {
+                        Toast.makeText(AdminsRegistrationActivity.this, "select exact location", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        String s[] = address[address.length - 2].split(" ");
+
+                        if (s.length > 3) {
+                            for (int j = 0; j < s.length - 1; j++) {
+
+                                RegionState = RegionState + s[j];
+                                RegionState = RegionState.trim();
+
+
+                            }
+                        } else {
+
+                            for (int j = 0; j < s.length; j++) {
+
+                                RegionState = RegionState + s[j];
+                                RegionState = RegionState.trim();
+
+                            }
+
+                        }
+                        RegionDistrict = RegionDistrict + address[address.length - 3];
+                         RegionDistrict =  RegionDistrict.trim();
+
+                        button.setEnabled(true);
+
+
+                    }
+
+                    choose_location_textview.setText(Myplace.getAddress());
+                }
             }
         }
+
+
     }
-
-
-
 
 
 }
