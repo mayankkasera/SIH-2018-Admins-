@@ -1,7 +1,9 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,10 +19,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import static dynamicdrillers.sih2018admins.SharedpreferenceHelper.SharedprefenceName;
+
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDataRoot = FirebaseDatabase.getInstance().getReference();
+
 
     private ProgressDialog progressBar;
 
@@ -28,21 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // FirebaseAuth.getInstance().signOut();
-        // fun("district@gmail.com","sejal@123");
 
-        //Checking User Is Logged In or Not
-        Button button = findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,AdminsRegistrationActivity.class));
-            }
-        });
-
-
-
-
+        SharedPreferences sharedPreferences = getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
 
         if(!isUserLoggedIn())
         {
@@ -51,7 +43,11 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            startActivity(new Intent(this,DashboardActivity.class));
+            String ee = SharedpreferenceHelper.getInstance(this).getType();
+            Intent i = new Intent(this,DashboardActivity.class);
+            i.putExtra("type",ee);
+              startActivity(i);
+
             finish();
         }
 
@@ -60,39 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void fun(String email,String password){
 
-        progressBar = new ProgressDialog(this);
-        progressBar.setMessage("sign ining ...");
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressBar.show();
-
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signInWithEmailAndPassword(email,password )
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(MainActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
-                            Toast.makeText(MainActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
-                            progressBar.dismiss();
-
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-
-                            Toast.makeText(MainActivity.this, "failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            progressBar.dismiss();
-                        }
-
-                        // ...
-                    }
-                });
-    }
 
     private boolean isUserLoggedIn() {
 

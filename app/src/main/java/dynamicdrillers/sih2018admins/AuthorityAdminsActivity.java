@@ -18,7 +18,7 @@ import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 
-public class AthorityAdminsActivity extends AppCompatActivity {
+public class AuthorityAdminsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 

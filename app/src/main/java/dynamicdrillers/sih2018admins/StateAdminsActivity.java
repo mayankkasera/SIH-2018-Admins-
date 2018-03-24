@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
-public class AdminsListActivity extends AppCompatActivity {
+public class StateAdminsActivity extends AppCompatActivity {
 
 
     private RecyclerView recyclerView;
@@ -61,8 +61,8 @@ public class AdminsListActivity extends AppCompatActivity {
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(AdminsListActivity.this,DistrictAdminsActivity.class);
-                        intent.putExtra("state",user.getState());
+                        Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
+
                         startActivity(intent);
 
                     }
@@ -103,7 +103,7 @@ public class AdminsListActivity extends AppCompatActivity {
 
         public void setImage(String image) {
             ImageView img =  mView.findViewById(R.id.image_admin);;
-            Picasso.with(AdminsListActivity.this).load(image).into(img);
+            Picasso.with(StateAdminsActivity.this).load(image).into(img);
         }
 
 

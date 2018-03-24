@@ -25,6 +25,8 @@ public class LoginActivity extends AppCompatActivity {
     Button login,reset_password;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDataRoot = FirebaseDatabase.getInstance().getReference();
+    String UserType;
+    String mUserUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +58,19 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(task.isSuccessful())
                 {
-                    String mUserUid = mAuth.getCurrentUser().getUid().toString();
+                     mUserUid = mAuth.getCurrentUser().getUid().toString();
 
                     mDataRoot.child("Management_Users").child(mUserUid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            String UserType = dataSnapshot.child("type").getValue().toString();
+                             UserType = dataSnapshot.child("type").getValue().toString();
 
                             //getting User Details By Its Type
+
                             Toast.makeText(LoginActivity.this, UserType, Toast.LENGTH_SHORT).show();
                             setUserDetails(UserType);
                             Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
+                            i.putExtra("type",UserType);
                             startActivity(i);
                             finish();
 
@@ -92,14 +96,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setUserDetails(String userType) {
 
-        String mUserUid = mAuth.getCurrentUser().getUid().toString();
-
-
 
         if(userType.equals("admin"))
         {
             //getting user details and setting to sharedPrefences
-            mDataRoot.child("Admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
+            mDataRoot.child("admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -107,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                     String adminMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String adminGender = dataSnapshot.child("gender").getValue().toString();
                     String adminImage = dataSnapshot.child("image").getValue().toString();
-                    String adminPassword = dataSnapshot.child("password").getValue().toString();
+                    String adminPassword = password.getText().toString();
                     String adminEmail = mAuth.getCurrentUser().getEmail().toString();
 
                     SharedpreferenceHelper.getInstance(LoginActivity.this).
@@ -137,8 +138,8 @@ public class LoginActivity extends AppCompatActivity {
                     String stateAdminMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String stateAdminGender = dataSnapshot.child("gender").getValue().toString();
                     String stateAdminImage = dataSnapshot.child("image").getValue().toString();
-                    String stateAdminStateName = dataSnapshot.child("state_name").getValue().toString();
-                    String stateAdminPassword = dataSnapshot.child("password").getValue().toString();
+                    String stateAdminStateName = dataSnapshot.child("state").getValue().toString();
+                    String stateAdminPassword = password.getText().toString();
                     String stateEmail = mAuth.getCurrentUser().getEmail().toString();
 
 
@@ -159,8 +160,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         else if(userType.equals("district_admin"))
         {
-
-
             //getting user details and setting to sharedPrefences
             mDataRoot.child("district_admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -170,9 +169,9 @@ public class LoginActivity extends AppCompatActivity {
                     String districtAdminMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String districtAdminGender = dataSnapshot.child("gender").getValue().toString();
                     String districtAdminImage = dataSnapshot.child("image").getValue().toString();
-                    String districtAdminStateName = dataSnapshot.child("state_name").getValue().toString();
-                    String districtAdminDistrictName = dataSnapshot.child("district_name").getValue().toString();
-                    String districtAdminPassword = dataSnapshot.child("password").getValue().toString();
+                    String districtAdminStateName = dataSnapshot.child("state").getValue().toString();
+                    String districtAdminDistrictName = dataSnapshot.child("district").getValue().toString();
+                    String districtAdminPassword = password.getText().toString();
                     String districtEmail = mAuth.getCurrentUser().getEmail().toString();
 
 
@@ -204,14 +203,14 @@ public class LoginActivity extends AppCompatActivity {
                     String subRegionAdminMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String subRegionAdminGender = dataSnapshot.child("gender").getValue().toString();
                     String subRegionAdminImage = dataSnapshot.child("image").getValue().toString();
-                    String subRegionAdminStateName = dataSnapshot.child("state_name").getValue().toString();
-                    String subRegionAdminDistrictName = dataSnapshot.child("district_name").getValue().toString();
-                    String subRegionAdminRegionName  = dataSnapshot.child("region_name").getValue().toString();
-                    String subRegionAdminPassword = dataSnapshot.child("password").getValue().toString();
+                    String subRegionAdminStateName = dataSnapshot.child("state").getValue().toString();
+                    String subRegionAdminDistrictName = dataSnapshot.child("district").getValue().toString();
+                    String subRegionAdminRegionName  = dataSnapshot.child("name").getValue().toString();
+                    String subRegionAdminPassword = password.getText().toString();
                     String subRegionAdminEmail = mAuth.getCurrentUser().getEmail().toString();
 
 
-                    SharedpreferenceHelper.getInstance(LoginActivity.this).setSubRegionAdminData(subRegionAdminName,subRegionAdminImage,subRegionAdminMobileno
+                    SharedpreferenceHelper.getInstance(LoginActivity.this).setRegionAdminData(subRegionAdminName,subRegionAdminImage,subRegionAdminMobileno
                             ,subRegionAdminGender,"region_admin"
                             ,subRegionAdminStateName,subRegionAdminDistrictName,subRegionAdminRegionName,subRegionAdminPassword,subRegionAdminEmail);
 
@@ -236,16 +235,17 @@ public class LoginActivity extends AppCompatActivity {
                     String localAuthorityName =  dataSnapshot.child("name").getValue().toString();
                     String localAuthorityMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String localAuthorityImage = dataSnapshot.child("image").getValue().toString();
-                    String localAuthorityStateName = dataSnapshot.child("state_name").getValue().toString();
-                    String localAuthorityDistrictName = dataSnapshot.child("district_name").getValue().toString();
-                    String localAuthoritySubRegionName  = dataSnapshot.child("subregion_name").getValue().toString();
-                    String localAuthoritySubRegionPassword = dataSnapshot.child("password").getValue().toString();
+                    String localAuthorityStateName = dataSnapshot.child("state").getValue().toString();
+                    String localAuthorityDistrictName = dataSnapshot.child("district").getValue().toString();
+                    String localAuthoritySubRegionName  = dataSnapshot.child("name").getValue().toString();
+                    String localAuthoritySubRegionPassword = password.getText().toString();
+                    String localAuthoritySubRegionAuthorityName = dataSnapshot.child("name").getValue().toString();
                     String localAuthorityEmail = mAuth.getCurrentUser().getEmail().toString();
 
 
                     SharedpreferenceHelper.getInstance(LoginActivity.this).setAuthorityAdminData(localAuthorityName,localAuthorityImage,localAuthorityMobileno
                             ,"authority_admin",localAuthorityStateName
-                            ,localAuthorityDistrictName,localAuthoritySubRegionName,localAuthoritySubRegionPassword,localAuthorityEmail);
+                            ,localAuthorityDistrictName,localAuthoritySubRegionName,localAuthoritySubRegionPassword,localAuthorityEmail,localAuthoritySubRegionAuthorityName);
 
 
                 }

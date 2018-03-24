@@ -40,7 +40,7 @@ public class RegionsAdminActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
 
 
-        district = sharedPreferences.getString("district_name",null);
+
         Toast.makeText(RegionsAdminActivity.this, district, Toast.LENGTH_SHORT).show();
 
 
@@ -52,7 +52,7 @@ public class RegionsAdminActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("subregionadmin").orderByChild("district").equalTo(district);
+                .child("region_admin");
 
 
         FirebaseRecyclerOptions<RegionModal> options =
@@ -67,7 +67,7 @@ public class RegionsAdminActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull RegionAdminsViewHolder holder, int position, @NonNull RegionModal user) {
                 final int pos = position;
                 holder.setImage(user.getImage());
-                holder.settitle(user.getAuthority());
+                holder.settitle(user.getRegion());
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override

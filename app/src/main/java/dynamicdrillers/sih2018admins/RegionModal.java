@@ -6,23 +6,23 @@ package dynamicdrillers.sih2018admins;
 
 public class RegionModal {
 
-    String authority;
+    String region;
     String image;
 
     public RegionModal() {
     }
 
-    public RegionModal(String authority, String image) {
-        this.authority = authority;
+    public RegionModal(String region, String image) {
+        this.region = region;
         this.image = image;
     }
 
-    public String getAuthority() {
-        return authority;
+    public String getRegion() {
+        return region;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getImage() {

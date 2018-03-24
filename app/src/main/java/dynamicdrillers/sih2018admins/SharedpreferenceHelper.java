@@ -63,7 +63,7 @@ public class SharedpreferenceHelper {
         editor.putString("mobileno",Mobileno);
         editor.putString("gender",Gender);
         editor.putString("type",Type);
-        editor.putString("state_name",StateName);
+        editor.putString("state",StateName);
         editor.putString("password",Password);
         editor.putString("email",Email);
 
@@ -85,8 +85,8 @@ public class SharedpreferenceHelper {
         editor.putString("mobileno",Mobileno);
         editor.putString("gender",Gender);
         editor.putString("type",Type);
-        editor.putString("state_name",StateName);
-        editor.putString("district_name",DistrictName);
+        editor.putString("state",StateName);
+        editor.putString("district",DistrictName);
         editor.putString("password",Password);
         editor.putString("email",Email);
 
@@ -95,8 +95,8 @@ public class SharedpreferenceHelper {
         editor.apply();
     }
 
-    public  void setSubRegionAdminData(String Name,String Image,String Mobileno,String Gender,
-                                       String Type,String StateName,String DistrictName,String SubRegionName,String Password,String Email)
+    public  void setRegionAdminData(String Name,String Image,String Mobileno,String Gender,
+                                       String Type,String StateName,String DistrictName,String RegionName,String Password,String Email)
     {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
 
@@ -106,9 +106,9 @@ public class SharedpreferenceHelper {
         editor.putString("mobileno",Mobileno);
         editor.putString("gender",Gender);
         editor.putString("type",Type);
-        editor.putString("state_name",StateName);
-        editor.putString("district_name",DistrictName);
-        editor.putString("subregion_name",SubRegionName);
+        editor.putString("state",StateName);
+        editor.putString("district",DistrictName);
+        editor.putString("region",RegionName);
         editor.putString("password",Password);
         editor.putString("email",Email);
 
@@ -118,7 +118,7 @@ public class SharedpreferenceHelper {
     }
 
     public  void setAuthorityAdminData(String Name,String Image,String Mobileno,String Type,
-                                       String StateName,String DistrictName,String SubRegionName,String Password,String Email)
+                                       String StateName,String DistrictName,String RegionName,String Password,String Email, String Authority)
     {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
 
@@ -127,11 +127,12 @@ public class SharedpreferenceHelper {
         editor.putString("image",Image);
         editor.putString("mobileno",Mobileno);
         editor.putString("type",Type);
-        editor.putString("state_name",StateName);
-        editor.putString("district_name",DistrictName);
-        editor.putString("subregion_name",SubRegionName);
+        editor.putString("state",StateName);
+        editor.putString("district",DistrictName);
+        editor.putString("region",RegionName);
         editor.putString("password",Password);
         editor.putString("email",Email);
+        editor.putString("name",Authority);
 
         editor.commit();
         editor.apply();
@@ -148,6 +149,12 @@ public class SharedpreferenceHelper {
     {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
         return    sharedPreferences.getString("type",null);
+
+    }
+    public String getDistrict()
+    {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        return    sharedPreferences.getString("district",null);
 
     }
 

@@ -37,35 +37,22 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         init();
-        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
-        //Type = sharedPreferences.getString("type","czc");
-        Toast.makeText(DashboardActivity.this,mAuth.getUid(), Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
 
 
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Management_Users").child(mAuth.getUid());
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Type = dataSnapshot.child("type").getValue().toString();
-                Toast.makeText(DashboardActivity.this, Type, Toast.LENGTH_SHORT).show();
-
-                if(Type.equals("admin"))
-                    Admins.setText("State Admins");
-                else  if(Type.equals("state_admin"))
-                    Admins.setText("District Admins");
-                else if(Type.equals("district_admin"))
-                    Admins.setText("Subregion Admins");
-                else
-                    Admins.setText("Authority Admins");
+        Type = getIntent().getStringExtra("type");
 
 
-            }
+        if(Type.equals("admin"))
+            Admins.setText("State Admins");
+        else  if(Type.equals("state_admin"))
+            Admins.setText("District Admins");
+        else if(Type.equals("district_admin"))
+            Admins.setText("Regions Admins");
+        else
+            Admins.setText("Authority Admins");
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
 
 
 
@@ -78,7 +65,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                 final Dialog dialog = new Dialog(DashboardActivity.this);
                 dialog.setContentView(R.layout.admins_dialog_layout);
-                dialog.setTitle("Chose  Action ");
+                dialog.setTitle("Choose  Action ");
 
 
 
@@ -98,13 +85,15 @@ public class DashboardActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent intent ;
                         if(Type.equals("admin"))
-                            intent = new Intent(DashboardActivity.this,AdminsListActivity.class);
+                            intent = new Intent(DashboardActivity.this,StateAdminsActivity.class);
                         else  if(Type.equals("state_admin"))
                             intent = new Intent(DashboardActivity.this,DistrictAdminsActivity.class);
                         else if(Type.equals("district_admin"))
                             intent = new  Intent(DashboardActivity.this,RegionsAdminActivity.class);
                         else
                             intent = new  Intent(DashboardActivity.this,AuthorityAdminActivity.class);
+
+
 
                         intent.putExtra("type",Type);
                         startActivity(intent);
@@ -114,16 +103,10 @@ public class DashboardActivity extends AppCompatActivity {
 
 
                 dialog.show();
-                //startActivity(new Intent(DashboardActivity.this,AdminsListActivity.class));
+                //startActivity(new Intent(DashboardActivity.this,StateAdminsActivity.class));
             }
         });
 
-        CardComplaint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this,AdminsRegistrationActivity.class));
-            }
-        });
 
 
 

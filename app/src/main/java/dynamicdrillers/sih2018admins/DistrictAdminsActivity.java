@@ -48,7 +48,7 @@ public class DistrictAdminsActivity extends AppCompatActivity {
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("district_admin")
-                .orderByChild("state").equalTo(sharedPreferences.getString("state_name",null));
+                ;
 
 
 
