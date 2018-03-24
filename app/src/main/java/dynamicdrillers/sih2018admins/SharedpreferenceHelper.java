@@ -2,6 +2,7 @@ package dynamicdrillers.sih2018admins;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 /**
  * Created by Happy-Singh on 3/16/2018.
@@ -76,6 +77,7 @@ public class SharedpreferenceHelper {
                                       String Type,String StateName,String DistrictName,String Password,String Email)
     {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        Toast.makeText(SharedpreferenceHelper.mCtx, "yes", Toast.LENGTH_SHORT).show();
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("name",Name);

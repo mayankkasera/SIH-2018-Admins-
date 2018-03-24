@@ -16,55 +16,58 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
-public class DistrictAdminsActivity extends AppCompatActivity {
-
+public class RegionsAdminActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     public static final String SharedprefenceName = "USER_DATA";
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private String district;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_district_admins);
+        setContentView(R.layout.activity_regions_admin);
 
-        recyclerView = findViewById(R.id.district_recyclerView);
+        recyclerView = findViewById(R.id.regions_recyclerView);
         recyclerView.setHasFixedSize(true);
         int numberOfColumns = 3;
         recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName, Context.MODE_PRIVATE);
-        Toast.makeText(this, sharedPreferences.getString("state_name",null), Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+
+
+        district = sharedPreferences.getString("district_name",null);
+        Toast.makeText(RegionsAdminActivity.this, district, Toast.LENGTH_SHORT).show();
 
 
     }
 
     public void onStart() {
         super.onStart();
-        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName, Context.MODE_PRIVATE);
 
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("district_admin")
-                .orderByChild("state").equalTo(sharedPreferences.getString("state_name",null));
+                .child("subregionadmin").orderByChild("district").equalTo(district);
 
 
-
-        FirebaseRecyclerOptions<DistrictModal> options =
-                new FirebaseRecyclerOptions.Builder<DistrictModal>()
-                        .setQuery(query, DistrictModal.class)
+        FirebaseRecyclerOptions<RegionModal> options =
+                new FirebaseRecyclerOptions.Builder<RegionModal>()
+                        .setQuery(query, RegionModal.class)
                         .build();
 
-        FirebaseRecyclerAdapter<DistrictModal,DistrictAdminsViewHolder> adapter
-                = new FirebaseRecyclerAdapter<DistrictModal,DistrictAdminsViewHolder>(options) {
+        FirebaseRecyclerAdapter<RegionModal,RegionAdminsViewHolder> adapter
+                = new FirebaseRecyclerAdapter<RegionModal,RegionAdminsViewHolder>(options) {
 
             @Override
-            protected void onBindViewHolder(@NonNull DistrictAdminsViewHolder holder, int position, @NonNull DistrictModal user) {
+            protected void onBindViewHolder(@NonNull RegionAdminsViewHolder holder, int position, @NonNull RegionModal user) {
                 final int pos = position;
                 holder.setImage(user.getImage());
-                holder.settitle(user.getDistrict());
+                holder.settitle(user.getAuthority());
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -76,12 +79,12 @@ public class DistrictAdminsActivity extends AppCompatActivity {
             }
 
             @Override
-            public DistrictAdminsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public RegionAdminsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
                 View mView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.single_admin_layout, parent, false);
 
-                return new DistrictAdminsViewHolder(mView);
+                return new RegionAdminsViewHolder(mView);
             }
         };
 
@@ -91,11 +94,11 @@ public class DistrictAdminsActivity extends AppCompatActivity {
 
     }
 
-    public class DistrictAdminsViewHolder extends RecyclerView.ViewHolder {
+    public class RegionAdminsViewHolder extends RecyclerView.ViewHolder {
         View mView;
 
 
-        public DistrictAdminsViewHolder(View itemView) {
+        public RegionAdminsViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
         }
@@ -107,7 +110,7 @@ public class DistrictAdminsActivity extends AppCompatActivity {
 
         public void setImage(String image) {
             ImageView img =  mView.findViewById(R.id.image_admin);;
-            Picasso.with(DistrictAdminsActivity.this).load(image).into(img);
+            Picasso.with(RegionsAdminActivity.this).load(image).into(img);
         }
 
 

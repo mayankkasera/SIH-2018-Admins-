@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dynamicdrillers.sih2018admins">
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,15 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/my_google_api_key_"/>
-
+            android:value="@string/my_google_api_key_" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -33,7 +31,9 @@
         <activity android:name=".AdminsRegistrationActivity" />
         <activity android:name=".AdminsListActivity" />
         <activity android:name=".DistrictAdminsActivity" />
-        <activity android:name=".AuthorityAdminActivity"></activity>
+        <activity android:name=".AuthorityAdminActivity" />
+        <activity android:name=".RegionsAdminActivity" />
+        <activity android:name=".AthorityAdminsActivity"></activity>
     </application>
 
 </manifest>
