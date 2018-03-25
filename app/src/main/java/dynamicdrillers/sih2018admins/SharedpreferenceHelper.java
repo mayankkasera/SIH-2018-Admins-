@@ -158,4 +158,21 @@ public class SharedpreferenceHelper {
 
     }
 
+    public String getState()
+    {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        return    sharedPreferences.getString("state",null);
+
+    }
+
+    public String getRegion()
+    {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        return    sharedPreferences.getString("region",null);
+
+    }
+
+
+
+
 }

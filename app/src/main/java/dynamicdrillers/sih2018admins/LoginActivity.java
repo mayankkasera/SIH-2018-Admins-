@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity {
                     String subRegionAdminImage = dataSnapshot.child("image").getValue().toString();
                     String subRegionAdminStateName = dataSnapshot.child("state").getValue().toString();
                     String subRegionAdminDistrictName = dataSnapshot.child("district").getValue().toString();
-                    String subRegionAdminRegionName  = dataSnapshot.child("name").getValue().toString();
+                    String subRegionAdminRegionName  = dataSnapshot.child("region").getValue().toString();
                     String subRegionAdminPassword = password.getText().toString();
                     String subRegionAdminEmail = mAuth.getCurrentUser().getEmail().toString();
 
