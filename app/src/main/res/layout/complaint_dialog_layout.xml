@@ -36,20 +36,22 @@
         android:text="View District Complaints"
         android:paddingRight="15dp"
         android:paddingLeft="15dp"/>
+
     <TextView
-        android:layout_marginTop="15dp"
         android:id="@+id/region"
-        android:textStyle="bold"
-        android:padding="7dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:textSize="18dp"
-        android:textColor="@color/white"
-        android:background="@drawable/red_button"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="View Region Complaints"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/red_button"
+        android:gravity="center"
+        android:padding="7dp"
+        android:paddingLeft="15dp"
         android:paddingRight="150dp"
-        android:paddingLeft="15dp"/>
+        android:text="View Region Complaints"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:textStyle="bold" />
 
 </LinearLayout>

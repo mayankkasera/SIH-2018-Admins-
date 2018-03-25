@@ -55,7 +55,8 @@
         <activity android:name=".ComplaintsActivity" />
         <activity android:name=".ComplaintsDesActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".FilterActivity"></activity>
+        <activity android:name=".FilterActivity" />
+        <activity android:name=".AuthorityDashboardActivity"></activity>
     </application>
 
 </manifest>

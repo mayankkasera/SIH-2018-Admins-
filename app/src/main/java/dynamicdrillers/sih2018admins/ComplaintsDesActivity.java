@@ -1,15 +1,22 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,18 +30,32 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ComplaintsDesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private String key;
+    private String key,AuthorityKey;
     private String Name,Dis,Add,Vote,Share,time;
     private TextView NameTxt,TimeTxt,DisTxt,AddTxt,VoteTxt,ShareTxt;
-    private String UserId;
+    private String Authority;
+    private Toolbar toolbar;
+    private ProgressDialog progressBar;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complaints_dis);
+
+        toolbar = findViewById(R.id.forward_toolbar);
+        forward();
+
+
+
+
 
 
 
@@ -90,6 +111,123 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
 
     }
+
+
+    void forward(){
+        String Type = SharedpreferenceHelper.getInstance(this).getType();
+
+        if(Type.equals("region_admin")){
+            ImageView imageView = findViewById(R.id.forword);
+
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
+                    dialog.setContentView(R.layout.foeward_dialog_layout);
+                    dialog.setTitle("Choose  Authority ");
+
+                    String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
+
+                    final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
+                    Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
+
+                    Forward.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            progressBar = new ProgressDialog(ComplaintsDesActivity.this);
+                            progressBar.setMessage("INITIALIZING ...");
+                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            progressBar.show();
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
+                            reference.child("complaint_forwardto").setValue(AuthorityKey);
+                            startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                            progressBar.dismiss();
+                        }
+                    });
+
+
+
+                    final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
+
+                    database.addValueEventListener(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            final List<String> areas = new ArrayList<String>();
+
+
+                            for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
+                                String areaName = areaSnapshot.child("authority").getValue(String.class);
+                                String authkey = areaSnapshot.getKey();
+
+                                areas.add(areaName.toUpperCase());
+                            }
+
+
+                            ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
+                            areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            AuthoritySpn.setAdapter(areasAdapter);
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+
+                    });
+                    AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String item = parent.getItemAtPosition(position).toString();
+
+                            // Showing selected spinner item
+                            Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                            Authority = item;
+
+                            final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
+                            database.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot data  : dataSnapshot.getChildren()){
+
+                                        Toast.makeText(ComplaintsDesActivity.this, data.getKey()
+                                                , Toast.LENGTH_SHORT).show();
+
+                                            AuthorityKey = data.getKey();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                    dialog.show();
+                }
+
+
+            });
+
+
+
+        }
+
+    }
+
 
 
     public void onStart() {

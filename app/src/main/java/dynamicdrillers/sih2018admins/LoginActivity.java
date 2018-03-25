@@ -242,7 +242,7 @@ public class LoginActivity extends AppCompatActivity {
                     String localAuthoritySubRegionAuthorityName = dataSnapshot.child("name").getValue().toString();
                     String localAuthorityEmail = mAuth.getCurrentUser().getEmail().toString();
 
-
+                    Toast.makeText(LoginActivity.this, "yes", Toast.LENGTH_SHORT).show();
                     SharedpreferenceHelper.getInstance(LoginActivity.this).setAuthorityAdminData(localAuthorityName,localAuthorityImage,localAuthorityMobileno
                             ,"authority_admin",localAuthorityStateName
                             ,localAuthorityDistrictName,localAuthoritySubRegionName,localAuthoritySubRegionPassword,localAuthorityEmail,localAuthoritySubRegionAuthorityName);

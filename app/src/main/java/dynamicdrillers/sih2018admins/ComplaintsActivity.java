@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -43,9 +44,12 @@ public class ComplaintsActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
+        Toast.makeText(this, getIntent().getStringExtra("type")+
+                " "+getIntent().getStringExtra("data"), Toast.LENGTH_SHORT).show();
+
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("complaints");
+                .child("complaints").orderByChild(getIntent().getStringExtra("type")).equalTo(getIntent().getStringExtra("data").toLowerCase());
 
         FirebaseRecyclerOptions<ComplaintModal> options =
                 new FirebaseRecyclerOptions.Builder<ComplaintModal>()
