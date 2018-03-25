@@ -54,7 +54,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".ComplaintsActivity" />
         <activity android:name=".ComplaintsDesActivity" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".FilterActivity"></activity>
     </application>
 
 </manifest>

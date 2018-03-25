@@ -52,20 +52,4 @@
         android:paddingRight="150dp"
         android:paddingLeft="15dp"/>
 
-    <TextView
-        android:id="@+id/authority"
-        android:textStyle="bold"
-        android:padding="7dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:textSize="18dp"
-        android:textColor="@color/white"
-        android:background="@drawable/purpul"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:text="View Authority Complaints"
-        android:paddingRight="15dp"
-        android:paddingLeft="15dp"/>
 </LinearLayout>
