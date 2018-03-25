@@ -1,6 +1,8 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -47,8 +49,7 @@ public class DistrictAdminsActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("district_admin")
-                ;
+                .child("district_admin");
 
 
 
@@ -69,7 +70,43 @@ public class DistrictAdminsActivity extends AppCompatActivity {
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        final Dialog dialog = new Dialog(getBaseContext());
+                        dialog.setContentView(R.layout.admin_list_action_layout);
+                        dialog.setTitle("Choose  Action ");
 
+                        final TextView Action1 = (TextView) dialog.findViewById(R.id.action1);
+                        final TextView Action2 = (TextView) dialog.findViewById(R.id.action2);
+
+
+                        if(getIntent().getStringExtra("from").equals("Complaints")) {
+                            Action2.setText("District Complaint");
+                            Action1.setText("Region list");
+
+                            Action2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(getBaseContext(),ComplaintsActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                        else if(getIntent().getStringExtra("from").equals("Admin")){
+                            Action2.setText("Admin Profile");
+                            Action1.setText("Region list");
+
+                            Action2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(getBaseContext(),ComplaintsActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                        else{
+
+                        }
                     }
                 });
 

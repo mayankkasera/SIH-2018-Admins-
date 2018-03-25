@@ -19,21 +19,42 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".DashboardActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".AdminsRegistrationActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".StateAdminsActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".DistrictAdminsActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".AuthorityAdminActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".RegionsAdminActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".AuthorityAdminsActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DashboardActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AdminsRegistrationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StateAdminsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DistrictAdminsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AuthorityAdminActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RegionsAdminActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AuthorityAdminsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ComplaintsActivity" />
+        <activity android:name=".ComplaintsDesActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -61,9 +62,72 @@ public class StateAdminsActivity extends AppCompatActivity {
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
 
-                        startActivity(intent);
+
+                        final Dialog dialog = new Dialog(StateAdminsActivity.this);
+                        dialog.setContentView(R.layout.admin_list_action_layout);
+                        dialog.setTitle("Choose  Action ");
+
+                        final TextView Action1 = (TextView) dialog.findViewById(R.id.action1);
+                        final TextView Action2 = (TextView) dialog.findViewById(R.id.action2);
+
+
+                        if(getIntent().getStringExtra("from").equals("Complaints")) {
+                            Action2.setText("State Complaint");
+                            Action1.setText("District list");
+
+                            Action2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(StateAdminsActivity.this,ComplaintsActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+                            Action1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
+                                    intent.putExtra("last","AdminList");
+                                    intent.putExtra("by","Complaints");
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                        else{
+                            Action2.setText("Admin Profile");
+                            Action1.setText("District list");
+
+                            Action2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+
+                                }
+                            });
+                            Action1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
+                                    intent.putExtra("last","AdminList");
+                                    intent.putExtra("by","Admin");
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+
+
+
+
+
+                        dialog.show();
+
+
+                       // Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
+
+                       // startActivity(intent);
 
                     }
                 });

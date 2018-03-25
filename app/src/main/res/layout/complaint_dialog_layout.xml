@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:padding="15dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:textStyle="bold"
+        android:padding="7dp"
+        android:gravity="center"
+        android:id="@+id/state"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:textSize="18dp"
+        android:background="@drawable/possitive"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="View State Complaints"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"/>
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:textStyle="bold"
+        android:padding="7dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/negetive"
+        android:id="@+id/district"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="View District Complaints"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"/>
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/region"
+        android:textStyle="bold"
+        android:padding="7dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/red_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="View Region Complaints"
+        android:paddingRight="150dp"
+        android:paddingLeft="15dp"/>
+
+    <TextView
+        android:id="@+id/authority"
+        android:textStyle="bold"
+        android:padding="7dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/purpul"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="View Authority Complaints"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"/>
+</LinearLayout>

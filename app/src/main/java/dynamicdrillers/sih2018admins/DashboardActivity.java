@@ -13,11 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -55,8 +52,91 @@ public class DashboardActivity extends AppCompatActivity {
 
 
 
+        CardComplaint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Dialog dialog = new Dialog(DashboardActivity.this);
+                dialog.setContentView(R.layout.complaint_dialog_layout);
+                dialog.setTitle("Choose  Action ");
+
+                final TextView State = (TextView) dialog.findViewById(R.id.state);
+                final TextView District = (TextView) dialog.findViewById(R.id.district);
+                final TextView Region = (TextView) dialog.findViewById(R.id.region);
+                final TextView Authority = (TextView) dialog.findViewById(R.id.authority);
+
+                if(Type.equals("admin")) {
+                   State.setVisibility(View.VISIBLE);
+                   District.setVisibility(View.VISIBLE);
+                   Region.setVisibility(View.VISIBLE);
+                   Authority.setVisibility(View.VISIBLE);
+                }
+                else  if(Type.equals("state_admin")){
+                    State.setVisibility(View.GONE);
+                    District.setVisibility(View.VISIBLE);
+                    Region.setVisibility(View.VISIBLE);
+                    Authority.setVisibility(View.VISIBLE);
+                }
+                else if(Type.equals("district_admin")){
+                    State.setVisibility(View.GONE);
+                    District.setVisibility(View.GONE);
+                    Region.setVisibility(View.VISIBLE);
+                    Authority.setVisibility(View.VISIBLE);
+                }
+                else{
+                    State.setVisibility(View.GONE);
+                    District.setVisibility(View.GONE);
+                    Region.setVisibility(View.GONE);
+                    Authority.setVisibility(View.VISIBLE);
+                }
+
+                State.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
 
 
+                        Intent intent = new Intent(DashboardActivity.this,StateAdminsActivity.class);
+                        intent.putExtra("from","Complaints");
+                        startActivity(intent);
+                    }
+                });
+
+                District.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                        intent.putExtra("complainer_region","bhopal");
+                        startActivity(intent);
+                    }
+                });
+
+                Region.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                        intent.putExtra("complainer_region","bhopal");
+                        startActivity(intent);
+                    }
+                });
+                Authority.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                        intent.putExtra("complainer_region","bhopal");
+                        startActivity(intent);
+                    }
+                });
+
+
+                dialog.show();
+
+
+            }
+        });
 
 
         CardAdmin.setOnClickListener(new View.OnClickListener() {
@@ -84,8 +164,10 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent ;
-                        if(Type.equals("admin"))
+                        if(Type.equals("admin")){
                             intent = new Intent(DashboardActivity.this,StateAdminsActivity.class);
+                            intent.putExtra("from","Admin");
+                        }
                         else  if(Type.equals("state_admin"))
                             intent = new Intent(DashboardActivity.this,DistrictAdminsActivity.class);
                         else if(Type.equals("district_admin"))
@@ -108,6 +190,12 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
+        sendNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DashboardActivity.this,ProfileActivity.class));
+            }
+        });
 
 
         Toast.makeText(this, sharedPreferences.getString("email",null)+" "+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
