@@ -7,24 +7,67 @@
     android:orientation="vertical">
 
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/image_admin"
-        android:layout_width="110dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp" />
-
-
-    <TextView
-        android:id="@+id/txt_admin"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:text="TextView"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+
+                android:id="@+id/image_admin"
+                android:layout_height="100dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ministrylogo"
+                />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_admin"
+                    android:layout_width="272dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="State Name"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_admin_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="State Name"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+
+
 </LinearLayout>

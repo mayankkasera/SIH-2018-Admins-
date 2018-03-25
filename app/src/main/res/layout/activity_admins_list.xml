@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -8,10 +8,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="dynamicdrillers.sih2018admins.StateAdminsActivity">
+
+    <EditText
+        android:layout_marginTop="10dp"
+        android:id="@+id/search_admin_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSearch"
+        android:lines="1"
+        android:inputType="textShortMessage"
+        android:textColorLink="@android:color/holo_red_light"
+        android:hint="Search Admin here"
+
+
+        android:padding="10dp"/>
     <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/search_admin_txt"
         android:id="@+id/admins_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+      >
 
     </android.support.v7.widget.RecyclerView>
-</LinearLayout>
+</RelativeLayout>

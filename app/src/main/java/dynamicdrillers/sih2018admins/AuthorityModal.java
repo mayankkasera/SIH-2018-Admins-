@@ -7,14 +7,25 @@ package dynamicdrillers.sih2018admins;
 public class AuthorityModal {
     String authority;
     String image;
+    String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AuthorityModal(String authority, String image, String name) {
+        this.authority = authority;
+        this.image = image;
+        this.name = name;
+    }
 
     public AuthorityModal() {
     }
 
-    public AuthorityModal(String authority, String image) {
-        this.authority = authority;
-        this.image = image;
-    }
 
     public String getAuthority() {
         return authority;

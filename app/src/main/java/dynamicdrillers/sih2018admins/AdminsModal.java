@@ -8,11 +8,24 @@ public class AdminsModal {
 
     String image;
     String state;
+    String name;
 
-    public AdminsModal(String image, String state) {
+    public AdminsModal(String image, String state, String name) {
         this.image = image;
         this.state = state;
+        this.name = name;
     }
+
+    public String getName() {
+
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
 
     public AdminsModal() {
     }

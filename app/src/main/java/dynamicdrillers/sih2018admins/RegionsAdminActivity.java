@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +30,8 @@ public class RegionsAdminActivity extends AppCompatActivity {
     public static final String SharedprefenceName = "USER_DATA";
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String district;
+    EditText mserachtext;
+    String searching_text ="";
 
 
     @Override
@@ -35,10 +41,30 @@ public class RegionsAdminActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.regions_recyclerView);
         recyclerView.setHasFixedSize(true);
-        int numberOfColumns = 3;
-        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        mserachtext = findViewById(R.id.search_region_txt);
 
+        int numberOfColumns = 3;
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        SharedPreferences sharedPreferences = getBaseContext().getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
+        mserachtext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                searching_text = s.toString();
+                onStart();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searching_text = s.toString();
+                onStart();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searching_text = s.toString();
+                onStart();
+            }
+        });
 
 
         Toast.makeText(RegionsAdminActivity.this, district, Toast.LENGTH_SHORT).show();
@@ -52,7 +78,8 @@ public class RegionsAdminActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("region_admin");
+                .child("region_admin").orderByChild("region").startAt(searching_text.toLowerCase())
+                .endAt(searching_text.toLowerCase() + "\uf8ff");;
 
 
         FirebaseRecyclerOptions<RegionModal> options =
@@ -67,7 +94,8 @@ public class RegionsAdminActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull RegionAdminsViewHolder holder, int position, @NonNull RegionModal user) {
                 final int pos = position;
                 holder.setImage(user.getImage());
-                holder.settitle(user.getRegion());
+                holder.settitle(user.getRegion().toUpperCase());
+                holder.setAdminName( "Admin :" +user.getName());
 
                 holder.getView().setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -112,6 +140,13 @@ public class RegionsAdminActivity extends AppCompatActivity {
             ImageView img =  mView.findViewById(R.id.image_admin);;
             Picasso.with(RegionsAdminActivity.this).load(image).into(img);
         }
+
+        public  void setAdminName(String title)
+        {
+            TextView textView = mView.findViewById(R.id.txt_admin_name);
+            textView.setText(title);
+        }
+
 
 
 
