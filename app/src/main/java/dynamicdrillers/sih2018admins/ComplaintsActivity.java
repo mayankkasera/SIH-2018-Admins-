@@ -44,12 +44,20 @@ public class ComplaintsActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
+        String data;
         Toast.makeText(this, getIntent().getStringExtra("type")+
                 " "+getIntent().getStringExtra("data"), Toast.LENGTH_SHORT).show();
 
+        if(getIntent().getStringExtra("type").equals("complaint_forwardto"))
+            data = getIntent().getStringExtra("data");
+        else
+            data = getIntent().getStringExtra("data").toLowerCase();
+
+
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("complaints").orderByChild(getIntent().getStringExtra("type")).equalTo(getIntent().getStringExtra("data").toLowerCase());
+                .child("complaints").orderByChild(getIntent().getStringExtra("type"))
+                .equalTo(data);
 
         FirebaseRecyclerOptions<ComplaintModal> options =
                 new FirebaseRecyclerOptions.Builder<ComplaintModal>()
@@ -70,6 +78,7 @@ public class ComplaintsActivity extends AppCompatActivity {
                 holder.setShare(user.getComplaint_share());
                 holder.setVote(user.getComplaint_votes());
                 holder.setImage(getRef(position).getKey());
+
                 final LinearLayout VoteLayout = holder.getView().findViewById(R.id.vote_layout);
                 final LinearLayout ShareLayout = holder.getView().findViewById(R.id.vote_layout);
                 final ImageView VoteImg = holder.getView().findViewById(R.id.vote_img);
@@ -87,6 +96,7 @@ public class ComplaintsActivity extends AppCompatActivity {
                         intent.putExtra("add",user.getComplaint_full_address());
                         intent.putExtra("vote",user.getComplaint_votes());
                         intent.putExtra("share",user.getComplaint_share());
+                        intent.putExtra("status",user.getComplaint_status());
                         startActivity(intent);
                     }
                 });

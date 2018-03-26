@@ -4,6 +4,14 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -57,6 +65,14 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".FilterActivity" />
         <activity android:name=".AuthorityDashboardActivity"></activity>
+
+        <meta-data
+            android:name="com.google.android.version"
+            android:value="119110000" />
+
+        <activity
+            android:name="com.gun0912.tedpicker.ImagePickerActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

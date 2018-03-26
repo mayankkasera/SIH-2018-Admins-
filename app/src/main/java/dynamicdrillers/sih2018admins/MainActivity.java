@@ -38,13 +38,18 @@ public class MainActivity extends AppCompatActivity {
             String ee = SharedpreferenceHelper.getInstance(this).getType();
             Toast.makeText(this, ee, Toast.LENGTH_SHORT).show();
 
-//                Intent i = new Intent(this,DashboardActivity.class);
-//                i.putExtra("type",ee);
-//                startActivity(i);
-//
+            if(ee.equals("authority_admin"))
+                startActivity(new Intent(this,AuthorityDashboardActivity.class));
+            else {
+                Intent i = new Intent(this,DashboardActivity.class);
+                i.putExtra("type",ee);
+                startActivity(i);
+            }
 
 
-            //finish();
+
+
+            finish();
         }
 
 
