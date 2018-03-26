@@ -48,20 +48,37 @@ public class FilterActivity extends AppCompatActivity {
                 if(getIntent().getStringExtra("type").equals("state")) {
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complainer_state");
-                    intent.putExtra("data", State);
-                    startActivity(intent);
+                    if(State!=null){
+                        intent.putExtra("data", State);
+                        startActivity(intent);
+                    }
+                    else{
+                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else if(getIntent().getStringExtra("type").equals("district")){
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
-                    intent.putExtra("type", "complainer_district");
-                    intent.putExtra("data", District);
-                    startActivity(intent);
+                    intent.putExtra("type", "complaint_district");
+                    if(District!=null){
+                        intent.putExtra("data", District);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 else {
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complainer_region");
-                    intent.putExtra("data", Region);
-                    startActivity(intent);
+                    if(Region!=null){
+                        intent.putExtra("data", Region);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });

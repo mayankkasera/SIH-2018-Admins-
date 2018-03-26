@@ -45,14 +45,15 @@ public class ComplaintsActivity extends AppCompatActivity {
         super.onStart();
 
         String data;
-        Toast.makeText(this, getIntent().getStringExtra("type")+
-                " "+getIntent().getStringExtra("data"), Toast.LENGTH_SHORT).show();
+
 
         if(getIntent().getStringExtra("type").equals("complaint_forwardto"))
             data = getIntent().getStringExtra("data");
         else
             data = getIntent().getStringExtra("data").toLowerCase();
 
+        Toast.makeText(this, getIntent().getStringExtra("type")+
+                " "+data, Toast.LENGTH_SHORT).show();
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
