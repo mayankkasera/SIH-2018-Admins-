@@ -1,6 +1,7 @@
 package dynamicdrillers.sih2018admins;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -97,10 +98,16 @@ public class RegionsAdminActivity extends AppCompatActivity {
                 holder.settitle(user.getRegion().toUpperCase());
                 holder.setAdminName( "Admin :" +user.getName());
 
-                holder.getView().setOnClickListener(new View.OnClickListener() {
+                final String Admin_id = getRef(position).getKey().toString();
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
+
+                        Intent i = new Intent(getBaseContext(),ProfileActivity.class);
+                        i.putExtra("admin_id",Admin_id);
+                        i.putExtra("admin_type","region");
+                        startActivity(i);
                     }
                 });
 

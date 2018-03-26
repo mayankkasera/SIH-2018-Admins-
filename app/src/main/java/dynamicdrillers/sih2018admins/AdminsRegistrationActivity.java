@@ -216,7 +216,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     }
                                     else if(Type.equals("region_admin")){
                                             myRef = database.getReference().child("authority_admin").child(user.getUid());
-                                            UserInfo.put("name",Authority.getEditText().getText().toString().toLowerCase());
+                                            UserInfo.put("authority",Authority.getEditText().getText().toString().toLowerCase());
                                             UserInfo.put("district",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getDistrict());
                                             UserInfo.put("state",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getState());
                                             UserInfo.put("region",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getRegion());
