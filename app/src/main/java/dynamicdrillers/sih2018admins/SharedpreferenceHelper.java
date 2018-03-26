@@ -134,6 +134,8 @@ public class SharedpreferenceHelper {
         editor.putString("email",Email);
         editor.putString("name",Authority);
 
+        Toast.makeText(mCtx, "yes", Toast.LENGTH_SHORT).show();
+
         editor.commit();
         editor.apply();
     }

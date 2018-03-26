@@ -60,6 +60,10 @@ public class LoginActivity extends AppCompatActivity {
                 {
                      mUserUid = mAuth.getCurrentUser().getUid().toString();
 
+
+                   Toast.makeText(LoginActivity.this,FirebaseAuth.getInstance().getCurrentUser().getUid().toString(),Toast.LENGTH_LONG).show();
+
+
                     mDataRoot.child("Management_Users").child(mUserUid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -67,11 +71,19 @@ public class LoginActivity extends AppCompatActivity {
 
                             //getting User Details By Its Type
 
-                            Toast.makeText(LoginActivity.this, UserType, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(LoginActivity.this, UserType, Toast.LENGTH_SHORT).show();
                             setUserDetails(UserType);
-                            Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
-                            i.putExtra("type",UserType);
-                            startActivity(i);
+
+                            if(UserType.equals("authority_admin"))
+                                startActivity(new Intent(LoginActivity.this,AuthorityDashboardActivity.class));
+                            else {
+                                Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
+                                i.putExtra("type",UserType);
+
+                                startActivity(i);
+                            }
+
+
                             finish();
 
                         }
@@ -231,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
             mDataRoot.child("authority_admin").child(mUserUid).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
+//
                     String localAuthorityName =  dataSnapshot.child("name").getValue().toString();
                     String localAuthorityMobileno = dataSnapshot.child("mobileno").getValue().toString();
                     String localAuthorityImage = dataSnapshot.child("image").getValue().toString();
@@ -242,7 +254,7 @@ public class LoginActivity extends AppCompatActivity {
                     String localAuthoritySubRegionAuthorityName = dataSnapshot.child("name").getValue().toString();
                     String localAuthorityEmail = mAuth.getCurrentUser().getEmail().toString();
 
-
+                    Toast.makeText(LoginActivity.this, "yes", Toast.LENGTH_SHORT).show();
                     SharedpreferenceHelper.getInstance(LoginActivity.this).setAuthorityAdminData(localAuthorityName,localAuthorityImage,localAuthorityMobileno
                             ,"authority_admin",localAuthorityStateName
                             ,localAuthorityDistrictName,localAuthoritySubRegionName,localAuthoritySubRegionPassword,localAuthorityEmail,localAuthoritySubRegionAuthorityName);

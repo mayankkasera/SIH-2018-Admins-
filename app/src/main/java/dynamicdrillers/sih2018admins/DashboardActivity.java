@@ -39,6 +39,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         Type = getIntent().getStringExtra("type");
 
+//        if(Type.equals("authority_admin"))
+  //          startActivity(new Intent(this,AuthorityDashboardActivity.class));
 
         if(Type.equals("admin"))
             Admins.setText("State Admins");
@@ -84,7 +86,8 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,StateAdminsActivity.class);
+                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                        intent.putExtra("type","state");
                         startActivity(intent);
                     }
                 });
@@ -93,7 +96,8 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                        intent.putExtra("type","district");
                         startActivity(intent);
                     }
                 });
@@ -102,7 +106,8 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                        intent.putExtra("type","region");
                         startActivity(intent);
                     }
                 });

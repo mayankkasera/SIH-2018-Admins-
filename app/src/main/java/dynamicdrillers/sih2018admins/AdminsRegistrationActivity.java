@@ -271,6 +271,14 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                 else if(Type.equals("district_admin")){//district_admin
                     DistrictLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.GONE);
+                    RegionLayout.setVisibility(View.VISIBLE);
+                    choose_location.setVisibility(View.VISIBLE);
+
+                    progressBar.dismiss();
+                }
+                else if(Type.equals("region_admin")){//district_admin
+                    DistrictLayout.setVisibility(View.GONE);
+                    StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.VISIBLE);
                     progressBar.dismiss();
                 }

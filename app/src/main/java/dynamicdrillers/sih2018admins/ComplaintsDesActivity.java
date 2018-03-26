@@ -1,40 +1,78 @@
 package dynamicdrillers.sih2018admins;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.gun0912.tedpicker.Config;
+import com.gun0912.tedpicker.ImagePickerActivity;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ComplaintsDesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private String key;
-    private String Name,Dis,Add,Vote,Share,time;
-    private TextView NameTxt,TimeTxt,DisTxt,AddTxt,VoteTxt,ShareTxt;
-    private String UserId;
+    private String key,AuthorityKey;
+    private String Name,Dis,Add,Vote,Share,time,Status;
+    private TextView NameTxt,TimeTxt,DisTxt,AddTxt,VoteTxt,ShareTxt,StatusTxt;
+    private String Authority;
+    private Toolbar toolbar;
+    private ProgressDialog progressBar;
+    StorageReference mStorage;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complaints_dis);
+
+        toolbar = findViewById(R.id.forward_toolbar);
+        forward();
+        mStorage = FirebaseStorage.getInstance().getReference();
+
+
+
 
 
 
@@ -47,6 +85,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         time = getIntent().getStringExtra("time");
         Dis = getIntent().getStringExtra("description");
         Add = getIntent().getStringExtra("add");
+        Status = getIntent().getStringExtra("status");
 
         Toast.makeText(this, ""+key, Toast.LENGTH_SHORT).show();
 
@@ -56,6 +95,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         AddTxt = findViewById(R.id.add_com_txt);
         VoteTxt = findViewById(R.id.vote_com_txt);
         ShareTxt = findViewById(R.id.share_com_txt);
+        StatusTxt = findViewById(R.id.status_com_txt);
 
         long l = Long.parseLong(time);
         String s = Time.getTimeAgo(l,this);
@@ -64,7 +104,18 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         TimeTxt.setText(Time.getTimeAgo(l,this));
         DisTxt.setText(Dis);
         AddTxt.setText(Add);
+        StatusTxt.setText(Status);
 
+
+        StatusTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("authority_admin"))
+                checkPermissions();
+                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("region_admin"))
+                regectComplaint();
+            }
+        });
 
         DatabaseReference referenceVote = FirebaseDatabase.getInstance().getReference()
                 .child("complaints").child(key);
@@ -90,6 +141,228 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
 
     }
+
+    private void regectComplaint() {
+        Toast.makeText(this, "v,vkjb", Toast.LENGTH_SHORT).show();
+        final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
+        dialog.setContentView(R.layout.reject_complaint_dialog_layout);
+        dialog.setTitle("Reject Complaint ");
+
+        final EditText editText = (EditText)dialog.findViewById(R.id.reject_edt);
+        Button button = (Button)dialog.findViewById(R.id.reject_btn);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("complaint_status").setValue("Reject");
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("Reject Reason").setValue(editText.getText().toString());
+                startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+
+    }
+
+
+    void checkPermissions(){
+        String s[]={android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE};
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                getImages();
+            }
+            else{
+                ActivityCompat.requestPermissions((Activity) this,s,123);
+            }
+        }
+        else{
+            ActivityCompat.requestPermissions((Activity) this,s,123);
+        }
+    }
+
+
+    private static final int INTENT_REQUEST_GET_IMAGES = 13;
+
+    private void getImages() {
+       Config config = new Config();
+        config.setSelectionMin(1);
+        config.setSelectionLimit(4);
+        ImagePickerActivity.setConfig(config);
+        Intent intent  = new Intent(this, ImagePickerActivity.class);
+        startActivityForResult(intent,INTENT_REQUEST_GET_IMAGES);
+
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resuleCode, final Intent intent) {
+        super.onActivityResult(requestCode, resuleCode, intent);
+
+        if (requestCode == INTENT_REQUEST_GET_IMAGES && resuleCode == Activity.RESULT_OK ) {
+            progressBar = new ProgressDialog(this);
+            progressBar.setMessage("INITIALIZING ...");
+            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressBar.show();
+
+
+            ArrayList<Uri> image_uris = intent.getParcelableArrayListExtra(ImagePickerActivity.EXTRA_IMAGE_URIS);
+            Toast.makeText(this, image_uris.size()+" "+image_uris.toString(), Toast.LENGTH_SHORT).show();
+
+            final DatabaseReference  reference = FirebaseDatabase.getInstance().getReference();
+            for (int i = 0;i<image_uris.size();i++ )
+            {
+                final int finalI = i;
+                Toast.makeText(this, ""+key, Toast.LENGTH_SHORT).show();
+                Uri img_uri = Uri.fromFile(new File(String.valueOf(image_uris.get(i))));
+                mStorage.child("complaints").child(key+"_request_response_"+(i+1)+".jpg").putFile(img_uri)
+                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                                Toast.makeText(getApplicationContext(), "image " + finalI + "uploaded", Toast.LENGTH_SHORT).show();
+                                HashMap<String,String> data = new HashMap<>();
+                                data.put("image",task.getResult().getDownloadUrl().toString());
+                                data.put("type","request response");
+                                reference.child("complaints").child(key).child("images").push().setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        progressBar.dismiss();
+                                        Intent intent1 = new Intent(ComplaintsDesActivity.this,AuthorityDashboardActivity.class);
+                                         startActivity(intent1);
+                                         finish();
+                                         FirebaseDatabase.getInstance().getReference()
+                                                 .child("complaints").child(key).child("complaint_status").setValue("Resolved");
+                                    }
+                                });
+                            }
+                        });
+            }
+            //do something//
+            progressBar.dismiss();
+        }
+
+    }
+
+    void forward(){
+        String Type = SharedpreferenceHelper.getInstance(this).getType();
+
+        if(Type.equals("region_admin")){
+            ImageView imageView = findViewById(R.id.forword);
+
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
+                    dialog.setContentView(R.layout.foeward_dialog_layout);
+                    dialog.setTitle("Choose  Authority ");
+
+                    String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
+
+                    final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
+                    Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
+
+                    Forward.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            progressBar = new ProgressDialog(ComplaintsDesActivity.this);
+                            progressBar.setMessage("INITIALIZING ...");
+                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            progressBar.show();
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
+                            reference.child("complaint_forwardto").setValue(AuthorityKey);
+                            startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                            progressBar.dismiss();
+                        }
+                    });
+
+
+
+                    final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
+
+                    database.addValueEventListener(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            final List<String> areas = new ArrayList<String>();
+
+
+                            for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
+                                String areaName = areaSnapshot.child("authority").getValue(String.class);
+                                String authkey = areaSnapshot.getKey();
+
+                                areas.add(areaName.toUpperCase());
+                            }
+
+
+                            ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
+                            areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            AuthoritySpn.setAdapter(areasAdapter);
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+
+                    });
+                    AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String item = parent.getItemAtPosition(position).toString();
+
+                            // Showing selected spinner item
+                            Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                            Authority = item;
+
+                            final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
+                            database.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot data  : dataSnapshot.getChildren()){
+
+                                        Toast.makeText(ComplaintsDesActivity.this, data.getKey()
+                                                , Toast.LENGTH_SHORT).show();
+
+                                            AuthorityKey = data.getKey();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                    dialog.show();
+                }
+
+
+            });
+
+
+
+        }
+
+    }
+
 
 
     public void onStart() {
