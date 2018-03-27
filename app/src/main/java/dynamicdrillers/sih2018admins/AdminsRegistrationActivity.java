@@ -39,7 +39,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
     private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority;
     private RadioGroup Gender;
-    private LinearLayout DistrictLayout,AuthorityLayout,StateLayout;
+    private LinearLayout DistrictLayout,AuthorityLayout,StateLayout,RegionLayout;
     private Button button;
     private String Gender_s="Male",Type;
     private String id;
@@ -310,6 +310,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         StateLayout = findViewById(R.id.state_layout_admin_reg);
         choose_location = findViewById(R.id.choose_location_layout);
         choose_location_textview = findViewById(R.id.choose_location_textview);
+        RegionLayout = findViewById(R.id.region_layout_admin_reg);
 
     }
 

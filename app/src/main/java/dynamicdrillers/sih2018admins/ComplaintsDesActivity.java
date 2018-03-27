@@ -158,7 +158,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                         .child("complaint_status").setValue("Reject");
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("Reject Reason").setValue(editText.getText().toString());
-                startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                //startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
                 Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
@@ -276,7 +276,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                             progressBar.show();
                             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
                             reference.child("complaint_forwardto").setValue(AuthorityKey);
-                            startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                           // startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
                             progressBar.dismiss();
                         }
                     });

@@ -53,7 +53,7 @@ public class FilterActivity extends AppCompatActivity {
                 }
                 else if(getIntent().getStringExtra("type").equals("district")){
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
-                    intent.putExtra("type", "complainer_district");
+                    intent.putExtra("type", "complaint_district");
                     intent.putExtra("data", District);
                     startActivity(intent);
                 }
