@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/SIH-2018-Admins-.iml" filepath="$PROJECT_DIR$/SIH-2018-Admins-.iml" />
       <module fileurl="file://G:\Android Apps\Chat App\SIH2018ADMINS\SIH-2018-Admins-.iml" filepath="G:\Android Apps\Chat App\SIH2018ADMINS\SIH-2018-Admins-.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SIH2018ADMINS.iml" filepath="$PROJECT_DIR$/SIH2018ADMINS.iml" />
       <module fileurl="file://C:\Users\Mayank\Documents\SIH-2018-Admins-\SIH2018ADMINS.iml" filepath="C:\Users\Mayank\Documents\SIH-2018-Admins-\SIH2018ADMINS.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

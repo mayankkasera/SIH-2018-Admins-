@@ -71,7 +71,9 @@ public class ComplaintsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull ComplaintViewHolder holder, final int position, @NonNull final ComplaintModal user) {
                 final int pos = position;
-                holder.setName("Name");
+
+
+                holder.setName(getRef(position).getKey());
                 holder.setStatus(user.getComplaint_status());
                 holder.setTime(user.getComplaint_request_time());
                 holder.setDes(user.getComplaint_description());

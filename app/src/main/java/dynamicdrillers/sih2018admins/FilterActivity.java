@@ -66,7 +66,10 @@ public class FilterActivity extends AppCompatActivity {
             }
         });
 
+        Toast.makeText(this, getIntent().getStringExtra("type"), Toast.LENGTH_SHORT).show();
+
         if(getIntent().getStringExtra("type").equals("state")){
+
             StateLayout.setVisibility(View.VISIBLE);
             DistrictLayout.setVisibility(View.GONE);
             RegionLayout.setVisibility(View.GONE);
@@ -81,6 +84,7 @@ public class FilterActivity extends AppCompatActivity {
             DistrictLayout.setVisibility(View.VISIBLE);
             RegionLayout.setVisibility(View.VISIBLE);
         }
+
         StateSpn();
 
 
@@ -138,8 +142,10 @@ public class FilterActivity extends AppCompatActivity {
 
 
     void DistrictSpn(){
+        Query database=null;
+            database = FirebaseDatabase.getInstance().getReference().child("district_admin")
+                    .orderByChild("state").equalTo(State.toLowerCase());
 
-        final Query database = FirebaseDatabase.getInstance().getReference().child("district_admin").orderByChild("state").equalTo(State.toLowerCase());
 
         database.addValueEventListener(new ValueEventListener() {
 
