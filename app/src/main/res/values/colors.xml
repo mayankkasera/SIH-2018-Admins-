@@ -7,7 +7,6 @@
     <color name="blue">#4463E1</color>
 
 
-    <color name="green">#0ea335</color>
     <color name="round_icon">#f25119</color>
     <color name="red">#ff0101</color>
     <color name="white">#ffffff</color>
@@ -17,5 +16,11 @@
     <color name="oreng">#fbbc05</color>
     <color name="purpul">#4285f4</color>
     <color name="black">#000000</color>
+
+    <color name="search_toolbar_color">#303F9F</color>
+    <color name="lightgray">#EEEEEE</color>
+    <color name="purple">#8200AF</color>
+    <color name="green">#00AF17</color>
+    <color name="lightblue">#0079AF</color>
 
 </resources>

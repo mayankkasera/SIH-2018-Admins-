@@ -2,6 +2,7 @@ package dynamicdrillers.sih2018admins;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -94,16 +95,16 @@ public class DistrictAdminsActivity extends AppCompatActivity {
                 holder.setImage(user.getImage());
                 holder.settitle(user.getDistrict().toUpperCase());
                 holder.setAdminName( "Admin :" +user.getName());
-                holder.getView().setOnClickListener(new View.OnClickListener() {
+                final String Admin_id = getRef(position).getKey().toString();
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final Dialog dialog = new Dialog(getBaseContext());
-                        dialog.setContentView(R.layout.admin_list_action_layout);
-                        dialog.setTitle("Choose  Action ");
 
-                        final TextView Action1 = (TextView) dialog.findViewById(R.id.action1);
-                        final TextView Action2 = (TextView) dialog.findViewById(R.id.action2);
 
+                        Intent i = new Intent(getBaseContext(),ProfileActivity.class);
+                        i.putExtra("admin_id",Admin_id);
+                        i.putExtra("admin_type","district");
+                        startActivity(i);
                     }
                 });
 

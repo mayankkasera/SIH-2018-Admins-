@@ -48,37 +48,20 @@ public class FilterActivity extends AppCompatActivity {
                 if(getIntent().getStringExtra("type").equals("state")) {
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complainer_state");
-                    if(State!=null){
-                        intent.putExtra("data", State);
-                        startActivity(intent);
-                    }
-                    else{
-                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
-                    }
+                    intent.putExtra("data", State);
+                    startActivity(intent);
                 }
                 else if(getIntent().getStringExtra("type").equals("district")){
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complaint_district");
-                    if(District!=null){
-                        intent.putExtra("data", District);
-                        startActivity(intent);
-                    }
-                    else {
-                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
-                    }
-
+                    intent.putExtra("data", District);
+                    startActivity(intent);
                 }
                 else {
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complainer_region");
-                    if(Region!=null){
-                        intent.putExtra("data", Region);
-                        startActivity(intent);
-                    }
-                    else {
-                        Toast.makeText(FilterActivity.this, "Try Again", Toast.LENGTH_SHORT).show();
-                    }
-
+                    intent.putExtra("data", Region);
+                    startActivity(intent);
                 }
             }
         });

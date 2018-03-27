@@ -68,9 +68,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_complaints_dis);
 
         toolbar = findViewById(R.id.forward_toolbar);
-
-
-
         forward();
         mStorage = FirebaseStorage.getInstance().getReference();
 
@@ -89,10 +86,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         Dis = getIntent().getStringExtra("description");
         Add = getIntent().getStringExtra("add");
         Status = getIntent().getStringExtra("status");
-
-
-
-
 
         Toast.makeText(this, ""+key, Toast.LENGTH_SHORT).show();
 
@@ -134,8 +127,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                 Share = dataSnapshot.child("complaint_share").getValue().toString();
                 VoteTxt.setText(dataSnapshot.child("complaint_votes").getValue()+ " Votes");
                 ShareTxt.setText(Share+" Share");
-                StatusTxt.setText(dataSnapshot.child("complaint_status").getValue().toString());
-
             }
 
             @Override
@@ -152,43 +143,26 @@ public class ComplaintsDesActivity extends AppCompatActivity {
     }
 
     private void regectComplaint() {
+        Toast.makeText(this, "v,vkjb", Toast.LENGTH_SHORT).show();
         final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
         dialog.setContentView(R.layout.reject_complaint_dialog_layout);
         dialog.setTitle("Reject Complaint ");
 
         final EditText editText = (EditText)dialog.findViewById(R.id.reject_edt);
-        final Button button = (Button)dialog.findViewById(R.id.reject_btn);
+        Button button = (Button)dialog.findViewById(R.id.reject_btn);
 
-        FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.child("complaint_status").getValue().toString().equals("Reject")){
-                            dialog.setTitle("Complaint Rejected\n Due to ");
-                            editText.setText(dataSnapshot.child("Reject Reason").getValue().toString());
-                            button.setEnabled(false);
-                        }
-                        else{
-                            button.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
-                                            .child("complaint_status").setValue("Reject");
-                                    FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
-                                            .child("Reject Reason").setValue(editText.getText().toString());
-                                    Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("complaint_status").setValue("Reject");
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("Reject Reason").setValue(editText.getText().toString());
+                //startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
 
@@ -274,7 +248,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
     }
 
-
     void forward(){
         String Type = SharedpreferenceHelper.getInstance(this).getType();
 
@@ -285,34 +258,54 @@ public class ComplaintsDesActivity extends AppCompatActivity {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
+                    dialog.setContentView(R.layout.foeward_dialog_layout);
+                    dialog.setTitle("Choose  Authority ");
 
-                    FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addValueEventListener(new ValueEventListener() {
+                    String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
+
+                    final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
+                    Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
+
+                    Forward.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            progressBar = new ProgressDialog(ComplaintsDesActivity.this);
+                            progressBar.setMessage("INITIALIZING ...");
+                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            progressBar.show();
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
+                            reference.child("complaint_forwardto").setValue(AuthorityKey);
+                           // startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
+                            progressBar.dismiss();
+                        }
+                    });
+
+
+
+                    final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
+
+                    database.addValueEventListener(new ValueEventListener() {
+
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            if(dataSnapshot.child("complaint_forwardto").getValue().equals("default")){
-                                ConformForward();
-                            }else{
+                            final List<String> areas = new ArrayList<String>();
 
-                                FirebaseDatabase.getInstance().getReference().child("authority_admin")
-                                        .child(dataSnapshot.child("complaint_forwardto").getValue().toString())
-                                        .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                                Toast.makeText(ComplaintsDesActivity.this,
-                                                        "Complaint Alredy Forwarded to \n"+
-                                                        dataSnapshot.child("authority").getValue().toString()
-                                                        , Toast.LENGTH_SHORT).show();
-                                            }
+                            for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
+                                String areaName = areaSnapshot.child("authority").getValue(String.class);
+                                String authkey = areaSnapshot.getKey();
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                Toast.makeText(ComplaintsDesActivity.this, "", Toast.LENGTH_SHORT).show();
+                                areas.add(areaName.toUpperCase());
                             }
+
+
+                            ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
+                            areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            AuthoritySpn.setAdapter(areasAdapter);
+
+
 
                         }
 
@@ -320,9 +313,45 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                         public void onCancelled(DatabaseError databaseError) {
 
                         }
+
                     });
+                    AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String item = parent.getItemAtPosition(position).toString();
+
+                            // Showing selected spinner item
+                            Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                            Authority = item;
+
+                            final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
+                            database.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot data  : dataSnapshot.getChildren()){
+
+                                        Toast.makeText(ComplaintsDesActivity.this, data.getKey()
+                                                , Toast.LENGTH_SHORT).show();
+
+                                            AuthorityKey = data.getKey();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
 
 
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+                    dialog.show();
                 }
 
 
@@ -332,106 +361,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
         }
 
-    }
-
-
-    void ConformForward(){
-        final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
-        dialog.setContentView(R.layout.foeward_dialog_layout);
-        dialog.setTitle("Choose  Authority ");
-
-        String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
-
-        final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
-        Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
-
-        Forward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressBar = new ProgressDialog(ComplaintsDesActivity.this);
-                progressBar.setMessage("INITIALIZING ...");
-                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressBar.show();
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
-                reference.child("complaint_forwardto").setValue(AuthorityKey);
-                // startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
-                Toast.makeText(ComplaintsDesActivity.this, "Forwarded to Authority", Toast.LENGTH_SHORT).show();
-                progressBar.dismiss();
-                dialog.dismiss();
-            }
-        });
-
-
-
-        final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
-
-        database.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                final List<String> areas = new ArrayList<String>();
-
-
-                for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
-                    String areaName = areaSnapshot.child("authority").getValue(String.class);
-                    String authkey = areaSnapshot.getKey();
-
-                    areas.add(areaName.toUpperCase());
-                }
-
-
-                ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
-                areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                AuthoritySpn.setAdapter(areasAdapter);
-
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
-        AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getItemAtPosition(position).toString();
-
-                // Showing selected spinner item
-                Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-                Authority = item;
-
-                final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
-                database.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot data  : dataSnapshot.getChildren()){
-
-                            Toast.makeText(ComplaintsDesActivity.this, data.getKey()
-                                    , Toast.LENGTH_SHORT).show();
-
-                            AuthorityKey = data.getKey();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        dialog.show();
     }
 
 

@@ -1,6 +1,7 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
+import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,8 +17,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -27,19 +26,22 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
 public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
-    private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority,Region;
+    private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority;
     private RadioGroup Gender;
     private LinearLayout DistrictLayout,AuthorityLayout,StateLayout,RegionLayout;
     private Button button;
-    private String Gender_s="Male";
+    private String Gender_s="Male",Type;
     private String id;
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
@@ -48,15 +50,9 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     public static final String SharedprefenceName = "USER_DATA";
     LinearLayout choose_location;
     TextView choose_location_textview;
-    String Type;
-    SharedPreferences sharedPreferences ;
+    String User_Type = SharedpreferenceHelper.getInstance(this).getType();
     int PLACE_PICKER_REQUEST = 1;
     Double Lat,Long;
-    String RegionState=" ";
-    String RegionDistrict = " ";
-    Place Myplace;
-    int Flag = 0;
-
 
 
 
@@ -67,8 +63,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admins_registration);
-        sharedPreferences = getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
-        Type = SharedpreferenceHelper.getInstance(this).getType();
+
         progressBar = new ProgressDialog(this);
         progressBar.setMessage("INITIALIZING ...");
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -78,10 +73,13 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         //Initialization of variables
         init();
 
-        //setting Visiblity of Registration LAyout
-        setFormAttributesVisiblity();
+        //setting Visiblity of District Layout
+        setDistrictVisiblity();
 
-
+        if(User_Type.equals("district_admin"))
+        {
+            choose_location.setVisibility(View.VISIBLE);
+        }
 
         choose_location_textview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +101,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
         //Registration
-
-
+        button = findViewById(R.id.register_btn_admin_reg);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,20 +110,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                 progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressBar.show();
 
-                if(Type.equals("district_admin")){
-                    String dis = SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getDistrict();
-                    if(RegionDistrict.equals(dis)){
-                        registerAdmins();
-                    }
-                    else{
-                        progressBar.dismiss();
-                        Toast.makeText(AdminsRegistrationActivity.this, "select region from your district", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else
-                   registerAdmins();
-
-
+                registerAdmins();
 
             }
         });
@@ -164,86 +148,63 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                             myRef= database.getReference().child("Management_Users").child(user.getUid());
 
 
-                            final HashMap<String,String> TypeInfo = new HashMap<String, String>();
+                            final HashMap<String,String> userInfo = new HashMap<String, String>();
                             if(Type.equals("admin"))
-                                TypeInfo.put("type","state_admin");
+                                userInfo.put("type","state_admin");
                             else if(Type.equals("state_admin"))
-                                TypeInfo.put("type","district_admin");
+                                userInfo.put("type","district_admin");
                             else if(Type.equals("district_admin")){
-                                TypeInfo.put("type","region_admin");
-                            } else
-                                TypeInfo.put("type","authority_admin");
+                                userInfo.put("type","authority_admin");
+                            }
 
 
-
-                            myRef.setValue(TypeInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            myRef.setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-
-
-                                    Toast.makeText(AdminsRegistrationActivity.this, "In Manager USer Added Succesfuly",
+                                    Toast.makeText(AdminsRegistrationActivity.this, "register....state",
                                             Toast.LENGTH_SHORT).show();
 
                                     //setting person detail
-                                    final FirebaseUser user = mAuth.getCurrentUser();
-                                    HashMap<String,String> UserInfo = new HashMap<String, String>();
-                                    UserInfo.put("name",Name.getEditText().getText().toString());
-                                    UserInfo.put("password",Password.getEditText().getText().toString());
-                                    UserInfo.put("email",Email.getEditText().getText().toString());
-                                    UserInfo.put("gender",Gender_s);
-                                    UserInfo.put("mobileno",MobileNo.getEditText().getText().toString());
-                                    UserInfo.put("image","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7hYNfHxOzH6TLbREidb_qhnNm_aGjsxsY-GjQVDJIEhc0A5ab");
-
-
+                                    FirebaseUser user = mAuth.getCurrentUser();
                                     if(Type.equals("admin")) {
-                                        myRef = database.getReference().child("state_admin").child(user.getUid());
-                                        UserInfo.put("state",State.getEditText().getText().toString().toLowerCase());
+                                        myRef = database.getReference().child("state_admin").child(user.getUid());                                    }
+                                    else if(Type.equals("state_admin"))
+                                        myRef = database.getReference().child("district_admin").child(user.getUid());
+                                    else if(Type.equals("district_admin")){
+                                        myRef = database.getReference().child("region_admin").child(user.getUid());
+
+                                    }
+
+
+                                    HashMap<String,String> userInfo1 = new HashMap<String, String>();
+                                    userInfo1.put("name",Name.getEditText().getText().toString());
+                                    userInfo1.put("password",Password.getEditText().getText().toString());
+                                    userInfo1.put("email",Email.getEditText().getText().toString());
+                                    userInfo1.put("gender",Gender_s);
+                                    userInfo1.put("mobileno",MobileNo.getEditText().getText().toString());
+                                    userInfo1.put("image","default");
+
+                                    if(Type.equals("admin")){
+                                        userInfo1.put("state",State.getEditText().getText().toString());
                                     }
                                     else if(Type.equals("state_admin")) {
-                                        myRef = database.getReference().child("district_admin").child(user.getUid());
-                                        UserInfo.put("state",sharedPreferences.getString("state",null).toLowerCase());
-                                        UserInfo.put("district",District.getEditText().getText().toString().toLowerCase());
-
+                                        userInfo1.put("state","ghgj");
+                                        userInfo1.put("district",District.getEditText().getText().toString());
                                     }
-                                    else if(Type.equals("district_admin")) {
-                                        myRef = database.getReference().child("region_admin").child(user.getUid());
-                                        UserInfo.put("state",RegionState.toLowerCase());
-                                        UserInfo.put("district",RegionDistrict.toLowerCase());
+                                    else if(Type.equals("district_admin")){
+                                        userInfo1.put("state","ghgj");
+                                        userInfo1.put("district","dbhbdsh");
+                                        userInfo1.put("lat",Lat.toString());
+                                        userInfo1.put("long",Long.toString());
 
-                                        UserInfo.put("lat",Lat.toString());
-                                        UserInfo.put("long",Long.toString());
-                                        UserInfo.put("region",Region.getEditText().getText().toString().toLowerCase());
-                                    }
-                                    else if(Type.equals("region_admin")){
-                                            myRef = database.getReference().child("authority_admin").child(user.getUid());
-                                            UserInfo.put("name",Authority.getEditText().getText().toString().toLowerCase());
-                                            UserInfo.put("district",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getDistrict());
-                                            UserInfo.put("state",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getState());
-                                            UserInfo.put("region",SharedpreferenceHelper.getInstance(AdminsRegistrationActivity.this).getRegion());
-
-
+                                        userInfo1.put("authority",Authority.getEditText().getText().toString());
                                     }
 
-
-                                    myRef.setValue(UserInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    myRef.setValue(userInfo1).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            Toast.makeText(AdminsRegistrationActivity.this, "Registration SuccessFuly..",
+                                            Toast.makeText(AdminsRegistrationActivity.this, "register....info ...state",
                                                     Toast.LENGTH_SHORT).show();
-
-                                            if(Type.equals("district_admin"))
-                                            {
-                                                Toast.makeText(AdminsRegistrationActivity.this, RegionDistrict+""+RegionState, Toast.LENGTH_SHORT).show();
-
-                                                DatabaseReference myRef1 = database.getReference().child("region_places").child(RegionState.toLowerCase()).child(RegionDistrict.toLowerCase());
-                                                GeoFire geoFire = new GeoFire(myRef1);
-                                                geoFire.setLocation(user.getUid(),new GeoLocation(Lat,Long));
-
-
-                                                RegionState = " ";
-                                                RegionDistrict = " ";
-                                            }
-
                                             progressBar.dismiss();
                                         }
                                     });
@@ -253,8 +214,9 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
                                     //Sign in curent user
 
+                                    SharedPreferences sharedPreferences = getSharedPreferences(SharedprefenceName, Context.MODE_PRIVATE);
                                     Toast.makeText(AdminsRegistrationActivity.this,sharedPreferences.getString("email",null)+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
-                                    Login(sharedPreferences.getString("email",null),sharedPreferences.getString("password",null));
+                                    fun(sharedPreferences.getString("email",null),sharedPreferences.getString("password",null));
 
 
                                 }
@@ -276,13 +238,24 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
     }
 
-    private void setFormAttributesVisiblity() {
+    private void setDistrictVisiblity() {
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        database = FirebaseDatabase.getInstance();
 
+        DatabaseReference refType = database.getReference().child("Management_Users").child(user.getUid());
+
+
+        refType.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Type = dataSnapshot.child("type").getValue().toString();
+                Toast.makeText(AdminsRegistrationActivity.this, Type,
+                        Toast.LENGTH_SHORT).show();
                 if(Type.equals("admin")){
                     DistrictLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.VISIBLE);
-                    button.setEnabled(true);
                     progressBar.dismiss();
                 }
 
@@ -291,7 +264,6 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.VISIBLE);
                     StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.GONE);
-                    button.setEnabled(true);
                     progressBar.dismiss();
                 }
 
@@ -308,12 +280,17 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                     DistrictLayout.setVisibility(View.GONE);
                     StateLayout.setVisibility(View.GONE);
                     AuthorityLayout.setVisibility(View.VISIBLE);
-                    Authority.setVisibility(View.VISIBLE);
-                    button.setEnabled(true);
                     progressBar.dismiss();
                 }
 
 
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 
@@ -333,14 +310,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         StateLayout = findViewById(R.id.state_layout_admin_reg);
         choose_location = findViewById(R.id.choose_location_layout);
         choose_location_textview = findViewById(R.id.choose_location_textview);
-        button = findViewById(R.id.register_btn_admin_reg);
-        button.setEnabled(false);
-        Region = findViewById(R.id.region__txt_admin_reg);
         RegionLayout = findViewById(R.id.region_layout_admin_reg);
 
     }
 
-    private void Login(String email, String password){
+    private void fun(String email,String password){
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email,password )
@@ -371,60 +345,21 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        RegionState = "";
-        RegionDistrict = "";
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Myplace = PlacePicker.getPlace(data, this);
+                Place place = PlacePicker.getPlace(data, this);
 
-                Lat = Myplace.getLatLng().latitude;
-                Long = Myplace.getLatLng().longitude;
-
-                if (Myplace.getAddress() != null) {
-                    String address[] = Myplace.getAddress().toString().split(",");
+                Lat = place.getLatLng().latitude;
+                Long= place.getLatLng().longitude;
 
 
-                    if (address.length <= 3) {
-                        Toast.makeText(AdminsRegistrationActivity.this, "select exact location", Toast.LENGTH_SHORT).show();
-
-                    } else {
-                        String state  = address[address.length - 2].replaceAll("\\d","");
-
-                        String dis_s[] = address[address.length-3].split(" ");
-                        for (int j = 0; j < dis_s.length; j++) {
-
-                            RegionDistrict = RegionDistrict + dis_s[j];
-
-
-                        }
-
-                        String st_s[] = state.split(" ");
-
-                        for (int j = 0; j < st_s.length; j++) {
-
-                            RegionState = RegionState + st_s[j];
-
-
-                        }
-
-                         RegionDistrict =  RegionDistrict.trim().toLowerCase();
-                        RegionState = RegionState.trim().toLowerCase();
-                        Toast.makeText(this, RegionState +"  " + RegionDistrict, Toast.LENGTH_SHORT).show();
-
-
-                        button.setEnabled(true);
-
-
-                    }
-
-                    choose_location_textview.setText(Myplace.getAddress());
-                }
+                choose_location_textview.setText(place.getAddress());
             }
         }
-
-
     }
+
+
+
 
 
 }

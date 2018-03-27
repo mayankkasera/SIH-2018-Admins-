@@ -1,6 +1,7 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -84,29 +85,21 @@ public class StateAdminsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull AdminsViewHolder holder, int position, @NonNull final AdminsModal user) {
                 final int pos = position;
+
                 holder.setImage(user.getImage());
                 holder.settitle(user.getState().toUpperCase());
                 holder.setAdminName( "Admin :" +user.getName());
 
-                holder.getView().setOnClickListener(new View.OnClickListener() {
+                final String Admin_id = getRef(position).getKey().toString();
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
 
-                        final Dialog dialog = new Dialog(StateAdminsActivity.this);
-                        dialog.setContentView(R.layout.admin_list_action_layout);
-                        dialog.setTitle("Choose  Action ");
-
-                        final TextView Action1 = (TextView) dialog.findViewById(R.id.action1);
-                        final TextView Action2 = (TextView) dialog.findViewById(R.id.action2);
-
-                        dialog.show();
-
-
-                       // Intent intent = new Intent(StateAdminsActivity.this,DistrictAdminsActivity.class);
-
-                       // startActivity(intent);
-
+                        Intent i = new Intent(getBaseContext(),ProfileActivity.class);
+                        i.putExtra("admin_id",Admin_id);
+                        i.putExtra("admin_type","state");
+                        startActivity(i);
                     }
                 });
 

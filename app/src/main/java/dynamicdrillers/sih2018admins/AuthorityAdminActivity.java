@@ -1,5 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -66,7 +67,7 @@ public class AuthorityAdminActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("authority_admin").orderByChild("state").startAt(searching_text.toLowerCase())
+                .child("authority_admin").orderByChild("authority").startAt(searching_text.toLowerCase())
                 .endAt(searching_text.toLowerCase() + "\uf8ff");
 
 
@@ -85,11 +86,16 @@ public class AuthorityAdminActivity extends AppCompatActivity {
                 holder.settitle(user.getAuthority().toUpperCase());
                 holder.setAdminName( "Admin :" +user.getName());
 
-
-                holder.getView().setOnClickListener(new View.OnClickListener() {
+                final String Admin_id = getRef(position).getKey().toString();
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
+
+                        Intent i = new Intent(getBaseContext(),ProfileActivity.class);
+                        i.putExtra("admin_id",Admin_id);
+                        i.putExtra("admin_type","authority");
+                        startActivity(i);
                     }
                 });
 
