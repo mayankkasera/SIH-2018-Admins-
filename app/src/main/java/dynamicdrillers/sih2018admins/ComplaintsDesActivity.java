@@ -35,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -57,7 +58,8 @@ public class ComplaintsDesActivity extends AppCompatActivity {
     private String Authority;
     private Toolbar toolbar;
     private ProgressDialog progressBar;
-    StorageReference mStorage;
+    private StorageReference mStorage;
+    private static final int INTENT_REQUEST_GET_IMAGES = 13;
 
 
 
@@ -100,7 +102,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         long l = Long.parseLong(time);
         String s = Time.getTimeAgo(l,this);
         Toast.makeText(this, s+" "+time, Toast.LENGTH_SHORT).show();
-        NameTxt.setText(Name);
+        NameTxt.setText(key);
         TimeTxt.setText(Time.getTimeAgo(l,this));
         DisTxt.setText(Dis);
         AddTxt.setText(Add);
@@ -112,8 +114,28 @@ public class ComplaintsDesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("authority_admin"))
                 checkPermissions();
-                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("region_admin"))
-                regectComplaint();
+                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("region_admin")){
+                    FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.child("complaint_status").getValue().toString().equals("Reject")){
+                                Toast.makeText(ComplaintsDesActivity.this,
+                                        "Compalint Alredy Rejected"+dataSnapshot.child("Reject Reason").getValue().toString() ,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            else{
+                                regectComplaint();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
             }
         });
 
@@ -127,6 +149,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                 Share = dataSnapshot.child("complaint_share").getValue().toString();
                 VoteTxt.setText(dataSnapshot.child("complaint_votes").getValue()+ " Votes");
                 ShareTxt.setText(Share+" Share");
+                StatusTxt.setText(dataSnapshot.child("complaint_status").getValue().toString());
             }
 
             @Override
@@ -143,7 +166,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
     }
 
     private void regectComplaint() {
-        Toast.makeText(this, "v,vkjb", Toast.LENGTH_SHORT).show();
         final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
         dialog.setContentView(R.layout.reject_complaint_dialog_layout);
         dialog.setTitle("Reject Complaint ");
@@ -154,21 +176,26 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("complaint_status").setValue("Reject");
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("Reject Reason").setValue(editText.getText().toString());
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("complaint_reject_time").setValue(ServerValue.TIMESTAMP);
+
                 //startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
                 Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
 
-        dialog.show();
+        dialog.show() ;
 
 
     }
-
 
     void checkPermissions(){
         String s[]={android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -185,9 +212,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         }
     }
 
-
-    private static final int INTENT_REQUEST_GET_IMAGES = 13;
-
     private void getImages() {
        Config config = new Config();
         config.setSelectionMin(1);
@@ -195,56 +219,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         ImagePickerActivity.setConfig(config);
         Intent intent  = new Intent(this, ImagePickerActivity.class);
         startActivityForResult(intent,INTENT_REQUEST_GET_IMAGES);
-
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resuleCode, final Intent intent) {
-        super.onActivityResult(requestCode, resuleCode, intent);
-
-        if (requestCode == INTENT_REQUEST_GET_IMAGES && resuleCode == Activity.RESULT_OK ) {
-            progressBar = new ProgressDialog(this);
-            progressBar.setMessage("INITIALIZING ...");
-            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressBar.show();
-
-
-            ArrayList<Uri> image_uris = intent.getParcelableArrayListExtra(ImagePickerActivity.EXTRA_IMAGE_URIS);
-            Toast.makeText(this, image_uris.size()+" "+image_uris.toString(), Toast.LENGTH_SHORT).show();
-
-            final DatabaseReference  reference = FirebaseDatabase.getInstance().getReference();
-            for (int i = 0;i<image_uris.size();i++ )
-            {
-                final int finalI = i;
-                Toast.makeText(this, ""+key, Toast.LENGTH_SHORT).show();
-                Uri img_uri = Uri.fromFile(new File(String.valueOf(image_uris.get(i))));
-                mStorage.child("complaints").child(key+"_request_response_"+(i+1)+".jpg").putFile(img_uri)
-                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                                Toast.makeText(getApplicationContext(), "image " + finalI + "uploaded", Toast.LENGTH_SHORT).show();
-                                HashMap<String,String> data = new HashMap<>();
-                                data.put("image",task.getResult().getDownloadUrl().toString());
-                                data.put("type","request response");
-                                reference.child("complaints").child(key).child("images").push().setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        progressBar.dismiss();
-                                        Intent intent1 = new Intent(ComplaintsDesActivity.this,AuthorityDashboardActivity.class);
-                                         startActivity(intent1);
-                                         finish();
-                                         FirebaseDatabase.getInstance().getReference()
-                                                 .child("complaints").child(key).child("complaint_status").setValue("Resolved");
-                                    }
-                                });
-                            }
-                        });
-            }
-            //do something//
-            progressBar.dismiss();
-        }
 
     }
 
@@ -258,100 +232,42 @@ public class ComplaintsDesActivity extends AppCompatActivity {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
-                    dialog.setContentView(R.layout.foeward_dialog_layout);
-                    dialog.setTitle("Choose  Authority ");
-
-                    String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
-
-                    final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
-                    Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
-
-                    Forward.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            progressBar = new ProgressDialog(ComplaintsDesActivity.this);
-                            progressBar.setMessage("INITIALIZING ...");
-                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            progressBar.show();
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
-                            reference.child("complaint_forwardto").setValue(AuthorityKey);
-                           // startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
-                            progressBar.dismiss();
-                        }
-                    });
-
-
-
-                    final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
-
-                    database.addValueEventListener(new ValueEventListener() {
-
+                    FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.child("complaint_status").getValue().toString().equals("Reject")){
 
-                            final List<String> areas = new ArrayList<String>();
-
-
-                            for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
-                                String areaName = areaSnapshot.child("authority").getValue(String.class);
-                                String authkey = areaSnapshot.getKey();
-
-                                areas.add(areaName.toUpperCase());
+                                  Toast.makeText(ComplaintsDesActivity.this, "Compalint Alredy Rejected", Toast.LENGTH_SHORT).show();
                             }
+                            else if(dataSnapshot.child("complaint_status").getValue().toString().equals("In Progress")){
+                                String s = dataSnapshot.child("complaint_forwardto").getValue().toString();
+                                FirebaseDatabase.getInstance().getReference().child("authority_admin").child(s).addValueEventListener(new ValueEventListener() {
 
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
-                            areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            AuthoritySpn.setAdapter(areasAdapter);
+                                        Toast.makeText(ComplaintsDesActivity.this,
+                                                "Compalint Alredy Forwarded to "
+                                                +dataSnapshot.child("authority").getValue().toString()
+                                                , Toast.LENGTH_SHORT).show();
+                                    }
 
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-
+                                    }
+                                });
+                            }
+                            else{
+                                  forwardedToAuthority();
+                            }
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
 
                         }
-
                     });
-                    AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            String item = parent.getItemAtPosition(position).toString();
-
-                            // Showing selected spinner item
-                            Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-                            Authority = item;
-
-                            final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
-                            database.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for(DataSnapshot data  : dataSnapshot.getChildren()){
-
-                                        Toast.makeText(ComplaintsDesActivity.this, data.getKey()
-                                                , Toast.LENGTH_SHORT).show();
-
-                                            AuthorityKey = data.getKey();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-                    dialog.show();
                 }
 
 
@@ -363,7 +279,111 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
     }
 
+    public  void forwardedToAuthority(){
 
+        final Dialog dialog = new Dialog(ComplaintsDesActivity.this);
+        dialog.setContentView(R.layout.foeward_dialog_layout);
+        dialog.setTitle("Choose  Authority ");
+
+        String reg = SharedpreferenceHelper.getInstance(getBaseContext()).getRegion();
+
+        final Spinner AuthoritySpn = (Spinner) dialog.findViewById(R.id.autority_spn);
+        Button Forward = (Button)dialog.findViewById(R.id.forward_btn);
+
+        Forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar = new ProgressDialog(ComplaintsDesActivity.this);
+                progressBar.setMessage("INITIALIZING ...");
+                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressBar.show();
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("complaints").child(key);
+                reference.child("complaint_forwardto").setValue(AuthorityKey);
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child("complaints").child(key).child("complaint_status").setValue("In Progress");
+
+                FirebaseDatabase.getInstance().getReference()
+                         .child("complaints").child(key).child("complaint_forward_time").setValue(ServerValue.TIMESTAMP);
+
+                dialog.dismiss();
+                progressBar.dismiss();
+            }
+        });
+
+
+
+        final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("region").equalTo(reg);
+
+        database.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final List<String> areas = new ArrayList<String>();
+
+
+                for (DataSnapshot areaSnapshot: dataSnapshot.getChildren()) {
+                    String areaName = areaSnapshot.child("authority").getValue(String.class);
+                    String authkey = areaSnapshot.getKey();
+
+                    areas.add(areaName.toUpperCase());
+                }
+
+
+                ArrayAdapter<String> areasAdapter = new ArrayAdapter<String>(ComplaintsDesActivity.this, android.R.layout.simple_spinner_item, areas);
+                areasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                AuthoritySpn.setAdapter(areasAdapter);
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+        AuthoritySpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String item = parent.getItemAtPosition(position).toString();
+
+                // Showing selected spinner item
+                Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                Authority = item;
+
+                final Query database = FirebaseDatabase.getInstance().getReference().child("authority_admin").orderByChild("authority").equalTo(Authority.toLowerCase());
+                database.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot data  : dataSnapshot.getChildren()){
+
+                            Toast.makeText(ComplaintsDesActivity.this, data.getKey()
+                                    , Toast.LENGTH_SHORT).show();
+
+                            AuthorityKey = data.getKey();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        dialog.show();
+
+    }
 
     public void onStart() {
         super.onStart();
@@ -434,5 +454,58 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resuleCode, final Intent intent) {
+        super.onActivityResult(requestCode, resuleCode, intent);
+
+        if (requestCode == INTENT_REQUEST_GET_IMAGES && resuleCode == Activity.RESULT_OK ) {
+            progressBar = new ProgressDialog(this);
+            progressBar.setMessage("INITIALIZING ...");
+            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressBar.show();
+
+
+            ArrayList<Uri> image_uris = intent.getParcelableArrayListExtra(ImagePickerActivity.EXTRA_IMAGE_URIS);
+            Toast.makeText(this, image_uris.size()+" "+image_uris.toString(), Toast.LENGTH_SHORT).show();
+
+            final DatabaseReference  reference = FirebaseDatabase.getInstance().getReference();
+            for (int i = 0;i<image_uris.size();i++ )
+            {
+                final int finalI = i;
+                Toast.makeText(this, ""+key, Toast.LENGTH_SHORT).show();
+                Uri img_uri = Uri.fromFile(new File(String.valueOf(image_uris.get(i))));
+                mStorage.child("complaints").child(key+"_request_response_"+(i+1)+".jpg").putFile(img_uri)
+                        .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                                Toast.makeText(getApplicationContext(), "image " + finalI + "uploaded", Toast.LENGTH_SHORT).show();
+                                HashMap<String,String> data = new HashMap<>();
+                                data.put("image",task.getResult().getDownloadUrl().toString());
+                                data.put("type","request response");
+                                reference.child("complaints").child(key).child("images").push().setValue(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        progressBar.dismiss();
+                                        Intent intent1 = new Intent(ComplaintsDesActivity.this,AuthorityDashboardActivity.class);
+                                        startActivity(intent1);
+                                        finish();
+                                        FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                                                .child("complaint_resolved_time").setValue(ServerValue.TIMESTAMP);
+
+                                        FirebaseDatabase.getInstance().getReference()
+                                                .child("complaints").child(key).child("complaint_status").setValue("Resolved");
+                                    }
+                                });
+                            }
+                        });
+            }
+            //do something//
+            progressBar.dismiss();
+        }
+
+    }
+
 
 }

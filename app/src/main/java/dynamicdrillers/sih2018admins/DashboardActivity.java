@@ -58,63 +58,107 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final Dialog dialog = new Dialog(DashboardActivity.this);
-                dialog.setContentView(R.layout.complaint_dialog_layout);
-                dialog.setTitle("Choose  Action ");
-
-                final TextView State = (TextView) dialog.findViewById(R.id.state);
-                final TextView District = (TextView) dialog.findViewById(R.id.district);
-                final TextView Region = (TextView) dialog.findViewById(R.id.region);
-
-                if(Type.equals("admin")) {
-                   State.setVisibility(View.VISIBLE);
-                   District.setVisibility(View.VISIBLE);
-                   Region.setVisibility(View.VISIBLE);
+                if(Type.equals("region_admin")){
+                    Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                    intent.putExtra("type","complainer_region");
+                    intent.putExtra("data",SharedpreferenceHelper.getInstance(getBaseContext()).getRegion());
+                    startActivity(intent);
                 }
-                else  if(Type.equals("state_admin")){
-                    State.setVisibility(View.GONE);
-                    District.setVisibility(View.VISIBLE);
-                    Region.setVisibility(View.VISIBLE);
+                else {
+                    final Dialog dialog = new Dialog(DashboardActivity.this);
+                    dialog.setContentView(R.layout.complaint_dialog_layout);
+                    dialog.setTitle("Choose  Action ");
+
+                    final TextView State = (TextView) dialog.findViewById(R.id.state);
+                    final TextView District = (TextView) dialog.findViewById(R.id.district);
+                    final TextView Region = (TextView) dialog.findViewById(R.id.region);
+
+                    if(Type.equals("admin")) {
+                        State.setVisibility(View.VISIBLE);
+                        District.setVisibility(View.VISIBLE);
+                        Region.setVisibility(View.VISIBLE);
+                    }
+                    else  if(Type.equals("state_admin")){
+                        State.setVisibility(View.VISIBLE);
+                        District.setVisibility(View.VISIBLE);
+                        Region.setVisibility(View.VISIBLE);
+
+                    }
+                    else if(Type.equals("district_admin")){
+                        State.setVisibility(View.GONE);
+                        District.setVisibility(View.VISIBLE);
+                        Region.setVisibility(View.VISIBLE);
+                    }
+
+
+                    State.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(Type.equals("admin")){
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                                intent.putExtra("type","state");
+                                startActivity(intent);
+                            }
+                            else {
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                                intent.putExtra("type","complainer_state");
+                                intent.putExtra("data",SharedpreferenceHelper.getInstance(getBaseContext()).getState());
+                                startActivity(intent);
+                            }
+
+                        }
+                    });
+
+                    District.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(Type.equals("district_admin")){
+                                Toast.makeText(DashboardActivity.this, SharedpreferenceHelper.getInstance(getBaseContext()).getDistrict(), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                                intent.putExtra("type","complaint_district");
+                                intent.putExtra("data",SharedpreferenceHelper.getInstance(getBaseContext()).getDistrict());
+                                startActivity(intent);
+                            }
+                            else {
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                                intent.putExtra("type","district");
+                                startActivity(intent);
+                            }
+
+                        }
+                    });
+
+                    Region.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(Type.equals("region_admin")){
+                                Toast.makeText(DashboardActivity.this, SharedpreferenceHelper.getInstance(getBaseContext()).getDistrict(), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
+                                intent.putExtra("type","complainer_region");
+                                intent.putExtra("data",SharedpreferenceHelper.getInstance(getBaseContext()).getRegion());
+                                startActivity(intent);
+                            }
+                            else {
+                                dialog.dismiss();
+                                Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
+                                intent.putExtra("type","region");
+                                startActivity(intent);
+                            }
+
+                        }
+                    });
+
+
+
+                    dialog.show();
+
+
                 }
-                else if(Type.equals("district_admin")){
-                    State.setVisibility(View.GONE);
-                    District.setVisibility(View.GONE);
-                    Region.setVisibility(View.VISIBLE);
-                }
-
-                State.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
-                        intent.putExtra("type","state");
-                        startActivity(intent);
-                    }
-                });
-
-                District.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
-                        intent.putExtra("type","district");
-                        startActivity(intent);
-                    }
-                });
-
-                Region.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
-                        intent.putExtra("type","region");
-                        startActivity(intent);
-                    }
-                });
-
-
-
-                dialog.show();
 
 
             }
@@ -133,6 +177,25 @@ public class DashboardActivity extends AppCompatActivity {
 
                 final Button AddAdmin = (Button) dialog.findViewById(R.id.add_admin);
                 final Button AdminList = (Button) dialog.findViewById(R.id.admin_list);
+
+                if(Type.equals("admin")){
+                    AddAdmin.setText("Add State");
+                    AdminList.setText("State Admins List");
+                }
+
+                else  if(Type.equals("state_admin")){
+                    AddAdmin.setText("Add District");
+                    AdminList.setText("District Admins List");
+                }
+                else if(Type.equals("district_admin")){
+                    AddAdmin.setText("Add Region");
+                    AdminList.setText("Region Admins");
+                }
+                else {
+                    AddAdmin.setText("Add Authority");
+                    AdminList.setText("Authority Admins List");
+                }
+
 
                 AddAdmin.setOnClickListener(new View.OnClickListener() {
                     @Override

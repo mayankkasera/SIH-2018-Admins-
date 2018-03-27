@@ -45,14 +45,15 @@ public class ComplaintsActivity extends AppCompatActivity {
         super.onStart();
 
         String data;
-        Toast.makeText(this, getIntent().getStringExtra("type")+
-                " "+getIntent().getStringExtra("data"), Toast.LENGTH_SHORT).show();
+
 
         if(getIntent().getStringExtra("type").equals("complaint_forwardto"))
             data = getIntent().getStringExtra("data");
         else
             data = getIntent().getStringExtra("data").toLowerCase();
 
+        Toast.makeText(this, getIntent().getStringExtra("type")+
+                " "+data, Toast.LENGTH_SHORT).show();
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
@@ -70,7 +71,9 @@ public class ComplaintsActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull ComplaintViewHolder holder, final int position, @NonNull final ComplaintModal user) {
                 final int pos = position;
-                holder.setName("Name");
+
+
+                holder.setName(getRef(position).getKey());
                 holder.setStatus(user.getComplaint_status());
                 holder.setTime(user.getComplaint_request_time());
                 holder.setDes(user.getComplaint_description());
