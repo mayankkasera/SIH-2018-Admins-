@@ -115,6 +115,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
 
         StatusTxt.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("authority_admin"))
@@ -192,6 +193,8 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                         .child("Reject Reason").setValue(editText.getText().toString());
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("complaint_reject_time").setValue(ServerValue.TIMESTAMP);
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                        .child("complaint_reject_by").setValue("region_admin");
 
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
