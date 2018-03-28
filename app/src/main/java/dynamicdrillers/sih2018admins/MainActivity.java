@@ -40,14 +40,12 @@ public class MainActivity extends AppCompatActivity {
 
             if(ee.equals("authority_admin"))
                 startActivity(new Intent(this,AuthorityDashboardActivity.class));
+
             else {
                 Intent i = new Intent(this,DashboardActivity.class);
                 i.putExtra("type",ee);
                 startActivity(i);
             }
-
-
-
 
             finish();
         }
@@ -71,5 +69,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
+
 
 }
