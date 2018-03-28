@@ -375,12 +375,15 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         String Type = SharedpreferenceHelper.getInstance(this).getType();
 
         if(Type.equals("region_admin")){
+
             ImageView imageView = findViewById(R.id.forword);
 
             imageView.setVisibility(View.VISIBLE);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+
                     FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -407,6 +410,26 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                     }
                                 });
                             }
+                            else if(dataSnapshot.child("complaint_status").getValue().toString().equals("Resolved")){
+                                if(dataSnapshot.child("complaint_resolved_by").getValue().toString().equals("admin")){
+                                    FirebaseDatabase.getInstance().getReference().child("authority_admin")
+                                            .child(dataSnapshot.child("complaint_forwardto").getValue().toString()).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by "+
+                                                    dataSnapshot.child("authority").getValue().toString(), Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                                else{
+                                    Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by User"
+                                            , Toast.LENGTH_SHORT).show();
+                                } }
                             else{
                                   forwardedToAuthority();
                             }
