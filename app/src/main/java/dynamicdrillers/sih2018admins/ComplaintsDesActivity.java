@@ -118,8 +118,46 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("authority_admin"))
-                checkPermissions();
+                if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("authority_admin")){
+                    if(!StatusTxt.getText().equals("Resolved")){
+                        if(!StatusTxt.getText().equals("Reject"))
+                            checkPermissions();
+                    }
+                    else{
+                        FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                                .addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.child("complaint_resolved_by").getValue().toString().equals("admin")){
+                                            FirebaseDatabase.getInstance().getReference().child("authority_admin")
+                                                    .child(dataSnapshot.child("complaint_forwardto").getValue().toString()).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by "+
+                                                            dataSnapshot.child("authority").getValue().toString(), Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                        }
+                                        else{
+                                            Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by User"
+                                                    , Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                    }
+
+                }
+
                 if(SharedpreferenceHelper.getInstance(getBaseContext()).getType().equals("region_admin")){
                     FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
