@@ -124,6 +124,29 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                         "Compalint Alredy Rejected"+dataSnapshot.child("Reject Reason").getValue().toString() ,
                                         Toast.LENGTH_SHORT).show();
                             }
+                            else if(dataSnapshot.child("complaint_status").getValue().toString().equals("Resolved"))
+                            {
+                                 if(dataSnapshot.child("complaint_resolved_by").getValue().toString().equals("admin")){
+                                     FirebaseDatabase.getInstance().getReference().child("authority_admin")
+                                             .child(dataSnapshot.child("complaint_forwardto").getValue().toString()).addValueEventListener(new ValueEventListener() {
+                                         @Override
+                                         public void onDataChange(DataSnapshot dataSnapshot) {
+                                             Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by "+
+                                                     dataSnapshot.child("authority").getValue().toString(), Toast.LENGTH_SHORT).show();
+                                         }
+
+                                         @Override
+                                         public void onCancelled(DatabaseError databaseError) {
+
+                                         }
+                                     });
+                                 }
+                                 else{
+                                     Toast.makeText(ComplaintsDesActivity.this, " Complaint Resolved by User"
+                                                    , Toast.LENGTH_SHORT).show();
+                                 }
+
+                            }
 
                             else{
                                 regectComplaint();
@@ -494,6 +517,9 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                         Intent intent1 = new Intent(ComplaintsDesActivity.this,AuthorityDashboardActivity.class);
                                         startActivity(intent1);
                                         finish();
+                                        FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
+                                                .child("complaint_resolved_by").setValue("admin");
+
                                         FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                                                 .child("complaint_resolved_time").setValue(ServerValue.TIMESTAMP);
 
