@@ -263,7 +263,40 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
                                 UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
                                 UserIdToken = dataSnapshot.child("token").getValue().toString();
-
+//
+//                                final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+//
+//                                final String T  = mRoot.push().getKey();
+//                                HashMap<String,String> param = new HashMap<>();
+//                                param.put("title","Complaint "+ key +"  rejected");
+//                                param.put("description","Reason : "+editText.getText().toString());
+//                                param.put("status","true");
+//                                param.put("time", String.valueOf(12345));
+//
+//
+//
+//                                mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//
+//                                        mRoot.child(T).child("time").child("t").setValue(ServerValue.TIMESTAMP);
+//                                        mRoot.child(T).child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+//                                                mRoot.child(T).child("time").setValue(time.toString());
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(DatabaseError databaseError) {
+//
+//                                            }
+//                                        });
+//
+//
+//                                        Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
 
 
                                 sendSmsToPhone(UserMobileNo,key,"reject",editText.getText().toString());
@@ -529,6 +562,39 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
 
+//                                final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+//
+//                                final String T  = mRoot.push().getKey();
+//                                HashMap<String,String> param = new HashMap<>();
+//                                param.put("title","Complaint "+ key +"  in Progress");
+//                                param.put("description","Your Complaint Will be Resolved Soon");
+//                                param.put("status","true");
+//                                param.put("time", String.valueOf(12345));
+//
+//
+//
+//                                mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//
+//                                        mRoot.child(T).child("time").child("t").setValue(ServerValue.TIMESTAMP);
+//                                        mRoot.child(T).child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+//                                                mRoot.child(T).child("time").setValue(time.toString());
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(DatabaseError databaseError) {
+//
+//                                            }
+//                                        });
+//
+//
+//                                        Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
 
                                 sendSmsToPhone(dataSnapshot.child("mobile").getValue().toString(),key,"inprogress"," ");
                                 sendPushNotification(dataSnapshot.child("token").getValue().toString(),"Your Complaint in Progress ","It will be Resolved Shortly ");
@@ -743,6 +809,39 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
 
 
+//                                                        final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+//
+//                                                        final String T  = mRoot.push().getKey();
+//
+//                                                        HashMap<String,String> param = new HashMap<>();
+//                                                        param.put("title","Complaint "+ key +"  Resolved");
+//                                                        param.put("description","Thank You");
+//                                                        param.put("status","true");
+//                                                        param.put("time", String.valueOf(12345));
+//
+//
+//                                                        mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                            @Override
+//                                                            public void onComplete(@NonNull Task<Void> task) {
+//
+//                                                                mRoot.child(T).child("time").child("t").setValue(ServerValue.TIMESTAMP);
+//                                                                mRoot.child(T).child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                                    @Override
+//                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                                        Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+//                                                                        mRoot.child(T).child("time").setValue(time.toString());
+//                                                                    }
+//
+//                                                                    @Override
+//                                                                    public void onCancelled(DatabaseError databaseError) {
+//
+//                                                                    }
+//                                                                });
+//
+//
+//                                                                Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+//                                                            }
+//                                                        });
 
 
                                                         UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
