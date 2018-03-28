@@ -335,6 +335,11 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                     param.put("message","Your Complaint is in Progress \n\n Complaint id "+Complaintid+"\n\n it will be resolved soon \n\n ADMIN SIH 2018\n\n(Byte Walker)");
 
                 }
+                else
+                {
+                    param.put("message","Your Complaint is Resolved \n\n Complaint id "+Complaintid+"\n\nCheck Status On Application  Thankyou for participating in to cleaning the India  \n\n ADMIN SIH 2018\n\n(Byte Walker)");
+
+                }
                 return  param;
             }
 
@@ -689,6 +694,34 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                         finish();
                                         FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                                                 .child("complaint_resolved_by").setValue("admin");
+
+                                        FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.child("complainer_id").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                        UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
+                                                        UserIdToken = dataSnapshot.child("token").getValue().toString();
+                                                        sendSmsToPhone(UserMobileNo,key,"resolved"," ");
+                                                        sendPushNotification(UserIdToken,"Complain Resolved ","ThankYou For Participating in To clean India");
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
 
                                         FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                                                 .child("complaint_resolved_time").setValue(ServerValue.TIMESTAMP);
