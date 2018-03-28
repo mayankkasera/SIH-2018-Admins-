@@ -79,10 +79,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         mStorage = FirebaseStorage.getInstance().getReference();
 
 
-
-
-
-
         recyclerView = findViewById(R.id.complaint_des_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -267,6 +263,9 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
                                 UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
                                 UserIdToken = dataSnapshot.child("token").getValue().toString();
+
+
+
                                 sendSmsToPhone(UserMobileNo,key,"reject",editText.getText().toString());
                                 sendPushNotification(UserIdToken,"Complaint Rejected",editText.getText().toString());
 
@@ -529,6 +528,8 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
+
+
                                 sendSmsToPhone(dataSnapshot.child("mobile").getValue().toString(),key,"inprogress"," ");
                                 sendPushNotification(dataSnapshot.child("token").getValue().toString(),"Your Complaint in Progress ","It will be Resolved Shortly ");
                             }
@@ -740,6 +741,9 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                                 FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.child("complainer_id").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+
 
                                                         UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
                                                         UserIdToken = dataSnapshot.child("token").getValue().toString();
