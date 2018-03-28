@@ -101,28 +101,7 @@
         </LinearLayout>
 
 
-        <android.support.v7.widget.CardView
-            android:layout_marginTop="10dp"
-            android:id="@+id/sendNotifications_dashboard_cardview"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.3"
-            android:background="#4463E1"
-            android:elevation="20dp"
-            android:translationZ="5dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-
-                android:background="@drawable/send_notification_layout"
-                android:gravity="center"
-                android:text="Send Notification"
-                android:textColor="@android:color/white"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-        </android.support.v7.widget.CardView>
 
 
 

@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import dmax.dialog.SpotsDialog;
 
@@ -80,6 +81,11 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                              UserType = dataSnapshot.child("type").getValue().toString();
+
+                             FirebaseDatabase.getInstance().getReference().child(UserType).child(mUserUid).child("token").setValue(FirebaseInstanceId.getInstance().getToken());
+
+
+
 
                             //getting User Details By Its Type
 

@@ -234,12 +234,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
 
-        sendNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(DashboardActivity.this,ProfileActivity.class));
-            }
-        });
+
 
 
         Toast.makeText(this, sharedPreferences.getString("email",null)+" "+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
@@ -254,6 +249,5 @@ public class DashboardActivity extends AppCompatActivity {
         ViewComplaints = findViewById(R.id.viewComplaints_dashboard_txt);
         CardAdmin = findViewById(R.id.CardAdmins);
         CardComplaint =  findViewById(R.id.CardComplaints);
-        sendNotification = findViewById(R.id.sendNotifications_dashboard_cardview);
     }
 }

@@ -26,6 +26,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +52,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ComplaintsDesActivity extends AppCompatActivity {
 
@@ -55,7 +60,7 @@ public class ComplaintsDesActivity extends AppCompatActivity {
     private String key,AuthorityKey;
     private String Name,Dis,Add,Vote,Share,time,Status;
     private TextView NameTxt,TimeTxt,DisTxt,AddTxt,VoteTxt,ShareTxt,StatusTxt;
-    private String Authority;
+    private String Authority,UserIdToken,UserMobileNo;
     private Toolbar toolbar;
     private ProgressDialog progressBar;
     private StorageReference mStorage;
@@ -72,10 +77,6 @@ public class ComplaintsDesActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.forward_toolbar);
         forward();
         mStorage = FirebaseStorage.getInstance().getReference();
-
-
-
-
 
 
         recyclerView = findViewById(R.id.complaint_des_recyclerView);
@@ -240,6 +241,8 @@ public class ComplaintsDesActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
+                final String[] mobileno = new String[1];
+                final String[] token = new String[1];
 
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("complaint_status").setValue("Reject");
@@ -250,8 +253,76 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                 FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                         .child("complaint_reject_by").setValue("region_admin");
 
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.child("complainer_id").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
+                                UserIdToken = dataSnapshot.child("token").getValue().toString();
+
+                                final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+
+                                final String T  = mRoot.push().getKey();
+                                HashMap<String,String> param = new HashMap<>();
+                                param.put("title","Complaint "+ key +"  rejected");
+                                param.put("description","Reason : "+editText.getText().toString());
+                                param.put("status","true");
+                                param.put("time", String.valueOf(12345));
+
+
+
+                                mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                        mRoot.child("time").child("t").setValue(ServerValue.TIMESTAMP);
+                                        mRoot.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+                                                mRoot.child(T).child("time").setValue(time.toString());
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
+                                        Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+
+                                sendSmsToPhone(UserMobileNo,key,"reject",editText.getText().toString());
+                                sendPushNotification(UserIdToken,"Complaint Rejected",editText.getText().toString());
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+
                 //startActivity(new Intent(ComplaintsDesActivity.this,DashboardActivity.class));
-                Toast.makeText(ComplaintsDesActivity.this, "yes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ComplaintsDesActivity.this, "Complaint Rejected", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -260,6 +331,95 @@ public class ComplaintsDesActivity extends AppCompatActivity {
 
 
     }
+
+    public void sendPushNotification(final String TokenUID , final String Type, final String Message) {
+
+        //Toast.makeText(this, TokenUID +"\n\n" +ComplaintCatagory + Address, Toast.LENGTH_SHORT).show();
+
+
+
+
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.POST, "http://happystore.16mb.com/sihapi/SendNotificationByOneSignal.php"
+                , new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //Toast.makeText(ComplaintsDesActivity.this, "Notification send" + response.toString(), Toast.LENGTH_SHORT).show();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(ComplaintsDesActivity.this, ""+ error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        }){
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+
+                final HashMap<String,String> param = new HashMap<>();
+                param.put("receivertoken",TokenUID);
+                param.put("description",Message);
+                param.put("title",Type);
+                return  param;
+            }
+        };
+
+
+        MySingleton.getInstance(ComplaintsDesActivity.this).addToRequestQueue(stringRequest);
+
+
+
+
+
+    }
+
+    private void sendSmsToPhone(final String mobileNumber, final String Complaintid, final String Type, final String Message) {
+
+        StringRequest stringRequest = new StringRequest(StringRequest.Method.POST, "http://happystore.16mb.com/sihapi/SmsApi.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //Toast.makeText(ComplaintsDesActivity.this, "Sms Sent", Toast.LENGTH_SHORT).show();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                HashMap<String,String> param = new HashMap<>();
+                param.put("mobileno",mobileNumber);
+
+                if(Type.equals("reject"))
+                {
+                    param.put("message","Your Complaint is Rejected \n\n Complaint id "+Complaintid+"\n\n Reject Reason : "+Message+" \n\n ADMIN SIH 2018\n\n(Byte Walker)");
+
+                }
+                else if(Type.equals("inprogress"))
+                {
+                    param.put("message","Your Complaint is in Progress \n\n Complaint id "+Complaintid+"\n\n it will be resolved soon \n\n ADMIN SIH 2018\n\n(Byte Walker)");
+
+                }
+                else
+                {
+                    param.put("message","Your Complaint is Resolved \n\n Complaint id "+Complaintid+"\n\nCheck Status On Application  Thankyou for participating in to cleaning the India  \n\n ADMIN SIH 2018\n\n(Byte Walker)");
+
+                }
+                return  param;
+            }
+
+
+
+        };
+
+        MySingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
 
     void checkPermissions(){
         String s[]={android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -393,6 +553,65 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                 FirebaseDatabase.getInstance().getReference()
                          .child("complaints").child(key).child("complaint_forward_time").setValue(ServerValue.TIMESTAMP);
 
+                FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.child("complainer_id").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                                final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+
+                                final String T  = mRoot.push().getKey();
+                                HashMap<String,String> param = new HashMap<>();
+                                param.put("title","Complaint "+ key +"  in Progress");
+                                param.put("description","Your Complaint Will be Resolved Soon");
+                                param.put("status","true");
+                                param.put("time", String.valueOf(12345));
+
+
+
+                                mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                        mRoot.child("time").child("t").setValue(ServerValue.TIMESTAMP);
+                                        mRoot.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+                                                mRoot.child(T).child("time").setValue(time.toString());
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+
+                                        Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                                sendSmsToPhone(dataSnapshot.child("mobile").getValue().toString(),key,"inprogress"," ");
+                                sendPushNotification(dataSnapshot.child("token").getValue().toString(),"Your Complaint in Progress ","It will be Resolved Shortly ");
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 dialog.dismiss();
                 progressBar.dismiss();
             }
@@ -580,6 +799,70 @@ public class ComplaintsDesActivity extends AppCompatActivity {
                                         finish();
                                         FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                                                 .child("complaint_resolved_by").setValue("admin");
+
+                                        FirebaseDatabase.getInstance().getReference().child("complaints").child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                FirebaseDatabase.getInstance().getReference().child("Users").child(dataSnapshot.child("complainer_id").getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                                                        final DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference().child("notification").child(dataSnapshot.getKey().toString());
+
+                                                        final String T  = mRoot.push().getKey();
+
+                                                        HashMap<String,String> param = new HashMap<>();
+                                                        param.put("title","Complaint "+ key +"  Resolved");
+                                                        param.put("description","Thank You");
+                                                        param.put("status","true");
+                                                        param.put("time", String.valueOf(12345));
+
+
+                                                        mRoot.child(T).setValue(param).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                                mRoot.child("time").child("t").setValue(ServerValue.TIMESTAMP);
+                                                                mRoot.child("time").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        Long time =  Long.parseLong(dataSnapshot.child("t").getValue().toString());
+                                                                        mRoot.child(T).child("time").setValue(time.toString());
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
+
+                                                                Toast.makeText(ComplaintsDesActivity.this, "notification rcyler sent", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+
+
+                                                        UserMobileNo = dataSnapshot.child("mobile").getValue().toString();
+                                                        UserIdToken = dataSnapshot.child("token").getValue().toString();
+                                                        sendSmsToPhone(UserMobileNo,key,"resolved"," ");
+                                                        sendPushNotification(UserIdToken,"Complain Resolved ","ThankYou For Participating in To clean India");
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
 
                                         FirebaseDatabase.getInstance().getReference().child("complaints").child(key)
                                                 .child("complaint_resolved_time").setValue(ServerValue.TIMESTAMP);
