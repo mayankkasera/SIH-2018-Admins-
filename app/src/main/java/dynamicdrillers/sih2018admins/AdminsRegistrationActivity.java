@@ -1,7 +1,6 @@
 package dynamicdrillers.sih2018admins;
 
 import android.app.ProgressDialog;
-import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +36,7 @@ import java.util.HashMap;
 public class AdminsRegistrationActivity extends AppCompatActivity {
 
 
-    private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority;
+    private TextInputLayout Name,Email,Password,MobileNo,State,District,Authority,Region;
     private RadioGroup Gender;
     private LinearLayout DistrictLayout,AuthorityLayout,StateLayout,RegionLayout;
     private Button button;
@@ -153,9 +152,11 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                 userInfo.put("type","state_admin");
                             else if(Type.equals("state_admin"))
                                 userInfo.put("type","district_admin");
-                            else if(Type.equals("district_admin")){
+                            else if(Type.equals("district_admin"))
+                                userInfo.put("type","region_admin");
+                            else if(Type.equals("region_admin"))
                                 userInfo.put("type","authority_admin");
-                            }
+
 
 
                             myRef.setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -172,11 +173,13 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                         myRef = database.getReference().child("district_admin").child(user.getUid());
                                     else if(Type.equals("district_admin")){
                                         myRef = database.getReference().child("region_admin").child(user.getUid());
-
+                                    }
+                                    else if(Type.equals("region_admin")) {
+                                        myRef = database.getReference().child("authority_admin").child(user.getUid());
                                     }
 
 
-                                    HashMap<String,String> userInfo1 = new HashMap<String, String>();
+                                        HashMap<String,String> userInfo1 = new HashMap<String, String>();
                                     userInfo1.put("name",Name.getEditText().getText().toString());
                                     userInfo1.put("password",Password.getEditText().getText().toString());
                                     userInfo1.put("email",Email.getEditText().getText().toString());
@@ -188,15 +191,21 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                         userInfo1.put("state",State.getEditText().getText().toString());
                                     }
                                     else if(Type.equals("state_admin")) {
-                                        userInfo1.put("state","ghgj");
+                                        userInfo1.put("state",SharedpreferenceHelper.getInstance(getApplicationContext()).getState());
                                         userInfo1.put("district",District.getEditText().getText().toString());
                                     }
                                     else if(Type.equals("district_admin")){
-                                        userInfo1.put("state","ghgj");
-                                        userInfo1.put("district","dbhbdsh");
+                                        userInfo1.put("state",SharedpreferenceHelper.getInstance(getApplicationContext()).getState());
+                                        userInfo1.put("district",SharedpreferenceHelper.getInstance(getApplicationContext()).getDistrict());
                                         userInfo1.put("lat",Lat.toString());
                                         userInfo1.put("long",Long.toString());
 
+                                        userInfo1.put("region", Region.getEditText().getText().toString());
+                                    }
+                                    else if(Type.equals("region_admin")){
+                                        userInfo1.put("state",SharedpreferenceHelper.getInstance(getApplicationContext()).getState());
+                                        userInfo1.put("district",SharedpreferenceHelper.getInstance(getApplicationContext()).getDistrict());
+                                        userInfo1.put("region",SharedpreferenceHelper.getInstance(getApplicationContext()).getRegion());
                                         userInfo1.put("authority",Authority.getEditText().getText().toString());
                                     }
 
@@ -311,6 +320,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
         choose_location = findViewById(R.id.choose_location_layout);
         choose_location_textview = findViewById(R.id.choose_location_textview);
         RegionLayout = findViewById(R.id.region_layout_admin_reg);
+        Region = findViewById(R.id.region__txt_admin_reg);
 
     }
 

@@ -4,17 +4,29 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.DownloadListener;
+import com.androidnetworking.interfaces.DownloadProgressListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import dmax.dialog.SpotsDialog;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -25,6 +37,7 @@ public class DashboardActivity extends AppCompatActivity {
     CardView CardAdmin, CardComplaint, sendNotification;
     public static final String SharedprefenceName = "USER_DATA";
     private String Type;
+    ImageView imageView;
 
 
 
@@ -32,6 +45,31 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+         findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                String s[]={android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                if(ContextCompat.checkSelfPermission(DashboardActivity.this, android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(DashboardActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                           checkPermissions();
+                    }
+                    else{
+                        ActivityCompat.requestPermissions(DashboardActivity.this,s,123);
+                    }
+                }
+                else{
+                    ActivityCompat.requestPermissions(DashboardActivity.this,s,123);
+                }
+
+
+
+
+            }
+        });
+
 
         init();
         SharedPreferences sharedPreferences = getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
@@ -250,4 +288,35 @@ public class DashboardActivity extends AppCompatActivity {
         CardAdmin = findViewById(R.id.CardAdmins);
         CardComplaint =  findViewById(R.id.CardComplaints);
     }
+
+    void checkPermissions() {
+        final SpotsDialog spotsDialog  = new SpotsDialog(this);
+        spotsDialog.show();
+        AndroidNetworking.download("http://api.pdflayer.com/api/convert?access_key=d31e4dc5234b89ae4c645efcd97002c0&document_url=http://apilayer.com"
+                , Environment.getExternalStorageDirectory().getPath()+"/Pictures","Mypdf.pdf")
+                .setTag("downloadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setDownloadProgressListener(new DownloadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesDownloaded, long totalBytes) {
+                        // do anything with progress
+
+                    }
+                })
+                .startDownload(new DownloadListener() {
+                    @Override
+                    public void onDownloadComplete() {
+                        spotsDialog.dismiss();
+                        Toast.makeText(DashboardActivity.this, "Download complete", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        spotsDialog.dismiss();
+                        Toast.makeText(DashboardActivity.this, "error :"+error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
 }
