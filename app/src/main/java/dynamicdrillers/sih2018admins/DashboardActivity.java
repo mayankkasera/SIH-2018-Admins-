@@ -136,8 +136,10 @@ public class DashboardActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
                                 intent.putExtra("type","state");
+                                intent.putExtra("user","admin");
                                 startActivity(intent);
                             }
+
                             else {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
@@ -185,6 +187,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
                                 intent.putExtra("type","region");
+                                intent.putExtra("user",Type);
                                 startActivity(intent);
                             }
 

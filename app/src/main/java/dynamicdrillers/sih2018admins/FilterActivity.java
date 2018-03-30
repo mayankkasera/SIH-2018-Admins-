@@ -58,6 +58,7 @@ public class FilterActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 else {
+
                     Intent intent = new Intent(getBaseContext(), ComplaintsActivity.class);
                     intent.putExtra("type", "complainer_region");
                     intent.putExtra("data", Region);
@@ -75,14 +76,22 @@ public class FilterActivity extends AppCompatActivity {
             RegionLayout.setVisibility(View.GONE);
         }
         else if(getIntent().getStringExtra("type").equals("district")){
-            StateLayout.setVisibility(View.VISIBLE);
+            StateLayout.setEnabled(false);
+
             DistrictLayout.setVisibility(View.VISIBLE);
             RegionLayout.setVisibility(View.GONE);
         }
         else {
+
             StateLayout.setVisibility(View.VISIBLE);
             DistrictLayout.setVisibility(View.VISIBLE);
             RegionLayout.setVisibility(View.VISIBLE);
+            if(getIntent().getStringExtra("user").equals("district_admin")){
+                StateLayout.setVisibility(View.GONE);
+                DistrictLayout.setVisibility(View.GONE);
+                District = SharedpreferenceHelper.getInstance(this).getDistrict();
+                RegionSpn();
+            }
         }
 
         StateSpn();
