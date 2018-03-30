@@ -58,9 +58,6 @@
         <activity
             android:name=".RegionsAdminActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".AuthorityAdminsActivity"
-            android:screenOrientation="portrait" />
         <activity android:name=".ComplaintsActivity" />
         <activity android:name=".ComplaintsDesActivity" />
         <activity android:name=".ProfileActivity" />

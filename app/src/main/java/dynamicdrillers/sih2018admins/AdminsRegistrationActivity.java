@@ -16,6 +16,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -217,6 +219,16 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                             progressBar.dismiss();
                                         }
                                     });
+
+
+                                    if(Type.equals("district_admin")){
+                                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                                                .child("region_places").child(SharedpreferenceHelper.getInstance(getApplicationContext()).getState())
+                                                .child(SharedpreferenceHelper.getInstance(getApplicationContext()).getDistrict());
+
+                                        GeoFire geoFire = new GeoFire(reference);
+                                        geoFire.setLocation(user.getUid().toString(),new GeoLocation(Lat,Long));
+                                    }
 
                                     //Sign out registered user
                                     FirebaseAuth.getInstance().signOut();
