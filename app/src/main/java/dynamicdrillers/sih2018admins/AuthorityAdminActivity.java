@@ -67,7 +67,7 @@ public class AuthorityAdminActivity extends AppCompatActivity {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("authority_admin").orderByChild("authority").startAt(searching_text.toLowerCase())
+                .child("authority_admin").orderByChild("region").equalTo(SharedpreferenceHelper.getInstance(AuthorityAdminActivity.this).getRegion()).startAt(searching_text.toLowerCase())
                 .endAt(searching_text.toLowerCase() + "\uf8ff");
 
 

@@ -182,7 +182,7 @@ public class AdminsRegistrationActivity extends AppCompatActivity {
                                     userInfo1.put("email",Email.getEditText().getText().toString());
                                     userInfo1.put("gender",Gender_s);
                                     userInfo1.put("mobileno",MobileNo.getEditText().getText().toString());
-                                    userInfo1.put("image","default");
+                                    userInfo1.put("image","https://www.alectro.com.au/libraries/images/icons/Male_Profile_Picture_Silhouette_Profile_Grey.png");
 
                                     if(Type.equals("admin")){
                                         userInfo1.put("state",State.getEditText().getText().toString());

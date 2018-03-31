@@ -20,6 +20,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import dmax.dialog.SpotsDialog;
+
 public class LoginActivity extends AppCompatActivity {
 
     TextInputEditText email,password;
@@ -28,11 +30,13 @@ public class LoginActivity extends AppCompatActivity {
     DatabaseReference mDataRoot = FirebaseDatabase.getInstance().getReference();
     String UserType;
     String mUserUid;
+    SpotsDialog spotsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        spotsDialog = new SpotsDialog(this);
 
         email = (TextInputEditText)findViewById(R.id.email_login_txtinput);
         password = (TextInputEditText)findViewById(R.id.password_login_txtinput);
@@ -44,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String Email = email.getText().toString();
                 String Pasaword = password.getText().toString();
+                spotsDialog.show();
                 userLogin(Email,Pasaword);
 
             }
@@ -62,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                      mUserUid = mAuth.getCurrentUser().getUid().toString();
 
 
-                   Toast.makeText(LoginActivity.this,FirebaseAuth.getInstance().getCurrentUser().getUid().toString(),Toast.LENGTH_LONG).show();
+                   //Toast.makeText(LoginActivity.this,FirebaseAuth.getInstance().getCurrentUser().getUid().toString(),Toast.LENGTH_LONG).show();
 
 
                     mDataRoot.child("Management_Users").child(mUserUid).addValueEventListener(new ValueEventListener() {
@@ -81,8 +86,13 @@ public class LoginActivity extends AppCompatActivity {
                             setUserDetails(UserType);
 
                             if(UserType.equals("authority_admin"))
+                            {
+                                spotsDialog.dismiss();
                                 startActivity(new Intent(LoginActivity.this,AuthorityDashboardActivity.class));
+
+                            }
                             else {
+                                spotsDialog.dismiss();
                                 Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
                                 i.putExtra("type",UserType);
 
@@ -96,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            spotsDialog.dismiss();
                             Toast.makeText(getApplicationContext(),databaseError.getMessage().toString(),Toast.LENGTH_SHORT).show();
 
 
@@ -104,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
                 }
                 else {
+                    spotsDialog.dismiss();
                     Toast.makeText(LoginActivity.this,task.getException().getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }
