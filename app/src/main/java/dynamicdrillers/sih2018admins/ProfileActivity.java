@@ -3,6 +3,7 @@ package dynamicdrillers.sih2018admins;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,23 +34,30 @@ public class ProfileActivity extends AppCompatActivity {
         String Admin_type = getIntent().getStringExtra("admin_type");
 
 
+        //Toast.makeText(this, Admin_id, Toast.LENGTH_SHORT).show();
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        if(Admin_type.equals("state"))
+        if(Admin_type.equals("state_admin"))
         {
             databaseReference = FirebaseDatabase.getInstance().getReference().child("state_admin");
-        } else  if (Admin_type.equals("region"))
+        } else  if (Admin_type.equals("region_admin"))
         {
             databaseReference = FirebaseDatabase.getInstance().getReference().child("region_admin");
 
-        }else  if (Admin_type.equals("district"))
+        }else  if (Admin_type.equals("district_admin"))
         {
             databaseReference = FirebaseDatabase.getInstance().getReference().child("district_admin");
 
         }
-        else  if (Admin_type.equals("authority"))
+        else  if (Admin_type.equals("authority_admin"))
         {
             databaseReference = FirebaseDatabase.getInstance().getReference().child("authority_admin");
+
+        }
+        else
+        {
+            databaseReference = FirebaseDatabase.getInstance().getReference().child("admin");
 
         }
 

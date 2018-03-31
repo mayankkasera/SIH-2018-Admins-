@@ -70,6 +70,7 @@ dependencies {
     compile 'com.amitshekhar.android:jackson-android-networking:1.0.1'
 
     compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.github.d-max:spots-dialog:0.7@aar' //For Loader
 
 
 

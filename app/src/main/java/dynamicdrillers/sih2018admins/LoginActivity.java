@@ -24,27 +24,31 @@ import dmax.dialog.SpotsDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText email,password;
-    private Button login,reset_password;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private DatabaseReference mDataRoot = FirebaseDatabase.getInstance().getReference();
-    private String UserType;
-    private String mUserUid;
-    private SpotsDialog spotsDialog;
+    TextInputEditText email,password;
+    Button login,reset_password;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    DatabaseReference mDataRoot = FirebaseDatabase.getInstance().getReference();
+    String UserType;
+    String mUserUid;
+    SpotsDialog spotsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        spotsDialog = new SpotsDialog(this);
 
-        init();
+        email = (TextInputEditText)findViewById(R.id.email_login_txtinput);
+        password = (TextInputEditText)findViewById(R.id.password_login_txtinput);
+        login = (Button)findViewById(R.id.login_login_btn);
+        reset_password = (Button)findViewById(R.id.resetpassword_login_ntn);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spotsDialog.show();
                 String Email = email.getText().toString();
                 String Pasaword = password.getText().toString();
+                spotsDialog.show();
                 userLogin(Email,Pasaword);
 
             }
@@ -52,18 +56,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private  void init(){
-        email = (TextInputEditText)findViewById(R.id.email_login_txtinput);
-        password = (TextInputEditText)findViewById(R.id.password_login_txtinput);
-        login = (Button)findViewById(R.id.login_login_btn);
-        reset_password = (Button)findViewById(R.id.resetpassword_login_ntn);
-        spotsDialog  = new SpotsDialog(this);
-    }
-
-
     private void userLogin(String email, String pasaword) {
-
-
 
         mAuth.signInWithEmailAndPassword(email,pasaword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -74,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                      mUserUid = mAuth.getCurrentUser().getUid().toString();
 
 
-                   Toast.makeText(LoginActivity.this,FirebaseAuth.getInstance().getCurrentUser().getUid().toString(),Toast.LENGTH_LONG).show();
+                   //Toast.makeText(LoginActivity.this,FirebaseAuth.getInstance().getCurrentUser().getUid().toString(),Toast.LENGTH_LONG).show();
 
 
                     mDataRoot.child("Management_Users").child(mUserUid).addValueEventListener(new ValueEventListener() {
@@ -92,14 +85,17 @@ public class LoginActivity extends AppCompatActivity {
                             //Toast.makeText(LoginActivity.this, UserType, Toast.LENGTH_SHORT).show();
                             setUserDetails(UserType);
 
-                            if(UserType.equals("authority_admin")){
+                            if(UserType.equals("authority_admin"))
+                            {
                                 spotsDialog.dismiss();
                                 startActivity(new Intent(LoginActivity.this,AuthorityDashboardActivity.class));
+
                             }
                             else {
                                 spotsDialog.dismiss();
                                 Intent i = new Intent(LoginActivity.this,DashboardActivity.class);
                                 i.putExtra("type",UserType);
+
                                 startActivity(i);
                             }
 
@@ -118,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
                 }
                 else {
+                    spotsDialog.dismiss();
                     Toast.makeText(LoginActivity.this,task.getException().getMessage().toString(),Toast.LENGTH_SHORT).show();
                 }
             }

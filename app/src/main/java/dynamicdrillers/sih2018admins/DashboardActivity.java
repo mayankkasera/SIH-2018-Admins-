@@ -4,29 +4,31 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidnetworking.AndroidNetworking;
-import com.androidnetworking.common.Priority;
-import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.DownloadListener;
-import com.androidnetworking.interfaces.DownloadProgressListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
-import dmax.dialog.SpotsDialog;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -37,7 +39,16 @@ public class DashboardActivity extends AppCompatActivity {
     CardView CardAdmin, CardComplaint, sendNotification;
     public static final String SharedprefenceName = "USER_DATA";
     private String Type;
-    ImageView imageView;
+    Button button;
+    private android.support.v7.widget.Toolbar toolbar;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    ImageView profile_Icon;
+    private ImageView drawer_open_icon;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    CircleImageView ProfileImage;
+    TextView name,mobile,state;
 
 
 
@@ -45,31 +56,6 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
-         findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                String s[]={android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if(ContextCompat.checkSelfPermission(DashboardActivity.this, android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(DashboardActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                           checkPermissions();
-                    }
-                    else{
-                        ActivityCompat.requestPermissions(DashboardActivity.this,s,123);
-                    }
-                }
-                else{
-                    ActivityCompat.requestPermissions(DashboardActivity.this,s,123);
-                }
-
-
-
-
-            }
-        });
-
 
         init();
         SharedPreferences sharedPreferences = getSharedPreferences(SharedprefenceName,Context.MODE_PRIVATE);
@@ -136,10 +122,8 @@ public class DashboardActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
                                 intent.putExtra("type","state");
-                                intent.putExtra("user","admin");
                                 startActivity(intent);
                             }
-
                             else {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,ComplaintsActivity.class);
@@ -187,7 +171,6 @@ public class DashboardActivity extends AppCompatActivity {
                                 dialog.dismiss();
                                 Intent intent = new Intent(DashboardActivity.this,FilterActivity.class);
                                 intent.putExtra("type","region");
-                                intent.putExtra("user",Type);
                                 startActivity(intent);
                             }
 
@@ -204,6 +187,77 @@ public class DashboardActivity extends AppCompatActivity {
 
             }
         });
+        profile_Icon = findViewById(R.id.toolbar_profile_icon);
+        drawerLayout = findViewById(R.id.drawer_main);
+        drawer_open_icon = findViewById(R.id.navigation_icon);
+
+
+
+        drawer_open_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                drawerLayout.openDrawer(Gravity.START);
+            }
+        });
+
+        navigationView = (NavigationView)findViewById(R.id.main_activity_nav);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                switch (item.getItemId()) {
+
+                    case  R.id.navigation_profile:
+                        Intent i = new Intent(DashboardActivity.this,ProfileActivity.class);
+                        i.putExtra("admin_id",mAuth.getCurrentUser().getUid().toString());
+                        i.putExtra("admin_type",Type);
+                        startActivity(i);
+                        drawerLayout.closeDrawer(Gravity.START);
+                        break;
+
+                    case  R.id.navigation_logout:
+                        Toast.makeText(getBaseContext(), "logout successfuly", Toast.LENGTH_SHORT).show();
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+
+                        mAuth.signOut();
+
+                        goToLoginPage();
+                        drawerLayout.closeDrawer(Gravity.START);
+                        break;
+
+
+
+                    case  R.id.navigation_aboutus:
+                        Toast.makeText(getBaseContext(), "aboutus  item Clicked", Toast.LENGTH_SHORT).show();
+                        drawerLayout.closeDrawer(Gravity.START);
+                        break;
+
+
+
+                }
+
+                return true;
+
+            }
+        });
+
+        profile_Icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent i = new Intent(DashboardActivity.this,ProfileActivity.class);
+                i.putExtra("admin_id",mAuth.getCurrentUser().getUid().toString());
+                i.putExtra("admin_type",Type);
+                startActivity(i);
+            }
+        });
+
+
+        toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        setNavigationItem();
 
 
         CardAdmin.setOnClickListener(new View.OnClickListener() {
@@ -260,25 +314,17 @@ public class DashboardActivity extends AppCompatActivity {
                         else
                             intent = new  Intent(DashboardActivity.this,AuthorityAdminActivity.class);
 
-
-
                         intent.putExtra("type",Type);
                         startActivity(intent);
                         dialog.dismiss();
                     }
                 });
-
-
                 dialog.show();
                 //startActivity(new Intent(DashboardActivity.this,StateAdminsActivity.class));
             }
         });
 
-
-
-
-
-        Toast.makeText(this, sharedPreferences.getString("email",null)+" "+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, sharedPreferences.getString("email",null)+" "+sharedPreferences.getString("password",null), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -292,34 +338,43 @@ public class DashboardActivity extends AppCompatActivity {
         CardComplaint =  findViewById(R.id.CardComplaints);
     }
 
-    void checkPermissions() {
-        final SpotsDialog spotsDialog  = new SpotsDialog(this);
-        spotsDialog.show();
-        AndroidNetworking.download("http://api.pdflayer.com/api/convert?access_key=d31e4dc5234b89ae4c645efcd97002c0&document_url=http://apilayer.com"
-                , Environment.getExternalStorageDirectory().getPath()+"/Pictures","Mypdf.pdf")
-                .setTag("downloadTest")
-                .setPriority(Priority.HIGH)
-                .build()
-                .setDownloadProgressListener(new DownloadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesDownloaded, long totalBytes) {
-                        // do anything with progress
 
-                    }
-                })
-                .startDownload(new DownloadListener() {
-                    @Override
-                    public void onDownloadComplete() {
-                        spotsDialog.dismiss();
-                        Toast.makeText(DashboardActivity.this, "Download complete", Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onError(ANError error) {
-                        spotsDialog.dismiss();
-                        Toast.makeText(DashboardActivity.this, "error :"+error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    public  void setNavigationItem()
 
+    {
+        navigationView = (NavigationView)findViewById(R.id.main_activity_nav);
+        View v = navigationView.getHeaderView(0);
+        name = v.findViewById(R.id.navigation_header_name);
+        mobile = v.findViewById(R.id.navigation_header_mobileno);
+        ProfileImage = v.findViewById(R.id.navigation_header_image);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        DatabaseReference mRoot = FirebaseDatabase.getInstance().getReference();
+
+        mRoot.child(Type).child(mAuth.getCurrentUser().getUid().toString()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Picasso.with(DashboardActivity.this).load(dataSnapshot.child("image").getValue().toString()).into(ProfileImage);
+                name.setText(dataSnapshot.child("name").getValue().toString());
+                mobile.setText("Mob :"+ dataSnapshot.child("mobileno").getValue().toString());
+                // state.setText(dataSnapshot.child(""));
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
+
+    // Method For going on login page
+    private void goToLoginPage() {
+
+        startActivity(new Intent(this,LoginActivity.class));
+        finish();
+    }
+
 
 }
